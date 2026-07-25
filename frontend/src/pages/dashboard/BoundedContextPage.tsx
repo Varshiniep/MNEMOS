@@ -15,8 +15,7 @@ export function BoundedContextPage() {
   const [error, setError]     = useState('');
 
   const load = useCallback(async () => {
-    if (!runId) return;
-    setLoading(true); setError('');
+    if (!runId) return; setLoading(true); setError('');
     try { setData(await fetchWorldSlice(runId)); }
     catch (e) { setError(e instanceof Error ? e.message : 'Failed'); }
     finally { setLoading(false); }
@@ -32,20 +31,27 @@ export function BoundedContextPage() {
   );
 
   return (
-    <div className="p-6 max-w-4xl mx-auto space-y-5">
-      <div className="flex items-center justify-between">
+    <div style={{ padding:'28px 32px', maxWidth:900, margin:'0 auto' }}>
+      <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:28 }}>
         <div>
-          <h2 className="text-2xl font-black text-white tracking-tight">Bounded Context</h2>
-          <p className="text-sm text-slate-500 mt-0.5">Exactly what the agent sees — nothing more</p>
+          <p className="label-overline" style={{ marginBottom:6 }}>Agent Perception</p>
+          <h2 style={{ fontSize:'clamp(1.5rem,3vw,2.2rem)', fontWeight:900, letterSpacing:'-0.04em', color:'#fff' }}>
+            Bounded Context
+          </h2>
+          <p style={{ fontSize:13, color:'#2d3748', marginTop:4 }}>
+            Exactly what the agent sees — nothing more.
+          </p>
         </div>
-        <button onClick={load} className="btn-ghost p-2" aria-label="Refresh"><RefreshCw size={15} /></button>
+        <button onClick={load} className="btn-ghost" style={{ padding:'7px' }} aria-label="Refresh">
+          <RefreshCw size={14} />
+        </button>
       </div>
 
       {loading && <LoadingState />}
-      {error   && <ErrorState message={error} retry={load} />}
+      {error && <ErrorState message={error} retry={load} />}
       {!loading && !error && !data && (
         <EmptyState title="No slice available"
-          message="Execute at least one step so the agent builds its first bounded context." />
+          message="Execute at least one agent step to build the first bounded context." />
       )}
       {data && <ContextViewer slice={data.slice} />}
     </div>

@@ -7,23 +7,10 @@ import { LoadingState } from '../../components/ui/LoadingState';
 import { ErrorState } from '../../components/ui/ErrorState';
 import { EmptyState } from '../../components/ui/EmptyState';
 import { useRunId } from '../../hooks/useRunId';
-import {
-  LineChart, Line, BarChart, Bar,
-  XAxis, YAxis, Tooltip, CartesianGrid,
-  ResponsiveContainer, ReferenceLine,
-} from 'recharts';
+import { LineChart, Line, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer } from 'recharts';
 
-const CHART_STYLE = {
-  background: 'transparent',
-  border: 'none',
-};
-const TOOLTIP_STYLE = {
-  background: '#0c1225',
-  border: '1px solid rgba(79,70,229,0.3)',
-  borderRadius: 8,
-  color: '#f1f5f9',
-  fontSize: 12,
-};
+const TT = { background:'#060912', border:'1px solid rgba(139,92,246,0.25)', borderRadius:8, color:'#f1f5f9', fontSize:11 };
+const AX = { fontSize:10, fill:'#2d3748' };
 
 export function MetricsPage() {
   const [runId]               = useRunId();
@@ -32,8 +19,7 @@ export function MetricsPage() {
   const [error, setError]     = useState('');
 
   const load = useCallback(async () => {
-    if (!runId) return;
-    setLoading(true); setError('');
+    if (!runId) return; setLoading(true); setError('');
     try { setData(await fetchMetrics(runId)); }
     catch (e) { setError(e instanceof Error ? e.message : 'Failed'); }
     finally { setLoading(false); }
@@ -50,18 +36,26 @@ export function MetricsPage() {
 
   const tokenData  = (data?.token_counts_per_turn ?? []).map((v, i) => ({ turn: i, tokens: v, traditional: v * 8 }));
   const beliefData = data ? [
-    { name: 'Active',     value: data.active_beliefs,     fill: '#4f46e5' },
-    { name: 'Superseded', value: data.superseded_beliefs, fill: '#7c3aed' },
+    { name: 'Active',     value: data.active_beliefs },
+    { name: 'Superseded', value: data.superseded_beliefs },
   ] : [];
 
+  const PANEL: React.CSSProperties = {
+    background:'rgba(8,10,22,0.9)', border:'1px solid rgba(255,255,255,0.05)', borderRadius:14, padding:20,
+  };
+
   return (
-    <div className="p-6 max-w-6xl mx-auto space-y-6">
-      <div className="flex items-center justify-between">
+    <div style={{ padding:'28px 32px', maxWidth:1100, margin:'0 auto' }}>
+      <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:28 }}>
         <div>
-          <h2 className="text-2xl font-black text-white tracking-tight">Performance Metrics</h2>
-          <p className="text-sm text-slate-500 mt-0.5">Live data from the current run</p>
+          <p className="label-overline" style={{ marginBottom:6 }}>Performance</p>
+          <h2 style={{ fontSize:'clamp(1.5rem,3vw,2.2rem)', fontWeight:900, letterSpacing:'-0.04em', color:'#fff' }}>
+            Metrics
+          </h2>
         </div>
-        <button onClick={load} className="btn-ghost p-2" aria-label="Refresh"><RefreshCw size={15} /></button>
+        <button onClick={load} className="btn-ghost" style={{ padding:'7px' }} aria-label="Refresh">
+          <RefreshCw size={14} />
+        </button>
       </div>
 
       {loading && <LoadingState />}
@@ -69,8 +63,7 @@ export function MetricsPage() {
 
       {data && (
         <>
-          {/* Top metrics grid */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:12, marginBottom:20 }}>
             <MetricCard label="Total Turns"    value={data.total_turns} />
             <MetricCard label="Total Actions"  value={data.total_actions} />
             <MetricCard label="Rooms Explored" value={data.unique_rooms_explored} />
@@ -82,59 +75,46 @@ export function MetricsPage() {
           </div>
 
           {data.elapsed_seconds !== null && (
-            <p className="text-xs text-slate-600">
-              Elapsed: <span className="text-slate-400">{data.elapsed_seconds}s</span>
-              {' · '}Status: <span className="text-slate-400">{data.completion_status}</span>
-              {' · '}Reward: <span className="text-emerald-400">{data.total_reward.toFixed(1)}</span>
+            <p className="mono" style={{ fontSize:9, color:'#2d3748', marginBottom:16, letterSpacing:'0.1em' }}>
+              ELAPSED: {data.elapsed_seconds}s · STATUS: {data.completion_status.toUpperCase()} · REWARD: {data.total_reward.toFixed(1)}
             </p>
           )}
 
-          {/* Token chart */}
           {tokenData.length > 1 ? (
-            <div className="card p-5">
-              <h3 className="text-xs font-semibold uppercase tracking-widest text-slate-500 mb-5">
-                Bounded Context Tokens vs Traditional History (estimated)
-              </h3>
-              <ResponsiveContainer width="100%" height={220}>
-                <LineChart data={tokenData} margin={{ top: 4, right: 16, left: 0, bottom: 4 }} style={CHART_STYLE}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-                  <XAxis dataKey="turn" tick={{ fontSize: 11, fill: '#475569' }}
-                    label={{ value: 'Turn', position: 'insideBottom', offset: -2, fill: '#475569', fontSize: 10 }} />
-                  <YAxis tick={{ fontSize: 11, fill: '#475569' }} />
-                  <Tooltip contentStyle={TOOLTIP_STYLE} />
-                  <Line type="monotone" dataKey="traditional" stroke="#ef4444" strokeWidth={1.5}
-                    dot={false} name="Traditional (est.)" strokeDasharray="4 4" />
-                  <Line type="monotone" dataKey="tokens" stroke="#4f46e5" strokeWidth={2}
-                    dot={false} name="MNEMOS Bounded Context" />
+            <div style={{ ...PANEL, marginBottom:14 }}>
+              <p className="label-overline" style={{ marginBottom:18 }}>
+                BOUNDED CONTEXT TOKENS vs TRADITIONAL HISTORY (estimated)
+              </p>
+              <ResponsiveContainer width="100%" height={200}>
+                <LineChart data={tokenData} margin={{ top:4, right:16, left:0, bottom:4 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
+                  <XAxis dataKey="turn" tick={AX} label={{ value:'Turn', position:'insideBottom', offset:-2, fill:'#2d3748', fontSize:9 }} />
+                  <YAxis tick={AX} />
+                  <Tooltip contentStyle={TT} />
+                  <Line type="monotone" dataKey="traditional" stroke="#ef4444" strokeWidth={1.5} dot={false} name="Traditional (est.)" strokeDasharray="5 3" />
+                  <Line type="monotone" dataKey="tokens" stroke="#8b5cf6" strokeWidth={2} dot={false} name="MNEMOS Bounded" />
                 </LineChart>
               </ResponsiveContainer>
-              <p className="text-xs text-slate-600 mt-3 text-center">
-                Traditional history grows 8× faster per turn (estimated). MNEMOS stays bounded.
+              <p className="mono" style={{ fontSize:9, color:'#1f2937', textAlign:'center', marginTop:10 }}>
+                TRADITIONAL HISTORY GROWS ~8× FASTER. MNEMOS STAYS BOUNDED.
               </p>
             </div>
           ) : (
-            <div className="card p-8 text-center">
-              <p className="text-sm text-slate-600">Charts appear after multiple agent turns.</p>
+            <div style={{ ...PANEL, textAlign:'center', padding:32, marginBottom:14 }}>
+              <p className="mono" style={{ fontSize:10, color:'#2d3748' }}>CHARTS APPEAR AFTER MULTIPLE AGENT TURNS</p>
             </div>
           )}
 
-          {/* Belief chart */}
           {beliefData.some(d => d.value > 0) && (
-            <div className="card p-5">
-              <h3 className="text-xs font-semibold uppercase tracking-widest text-slate-500 mb-5">
-                Belief Status Distribution
-              </h3>
-              <ResponsiveContainer width="100%" height={160}>
-                <BarChart data={beliefData} margin={{ top: 4, right: 16, left: 0, bottom: 4 }} style={CHART_STYLE}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-                  <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#475569' }} />
-                  <YAxis tick={{ fontSize: 11, fill: '#475569' }} />
-                  <Tooltip contentStyle={TOOLTIP_STYLE} />
-                  <Bar dataKey="value" name="Count" radius={[4, 4, 0, 0]}>
-                    {beliefData.map((entry, i) => (
-                      <rect key={i} fill={entry.fill} />
-                    ))}
-                  </Bar>
+            <div style={PANEL}>
+              <p className="label-overline" style={{ marginBottom:18 }}>BELIEF STATUS DISTRIBUTION</p>
+              <ResponsiveContainer width="100%" height={150}>
+                <BarChart data={beliefData} margin={{ top:4, right:16, left:0, bottom:4 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
+                  <XAxis dataKey="name" tick={AX} />
+                  <YAxis tick={AX} />
+                  <Tooltip contentStyle={TT} />
+                  <Bar dataKey="value" name="Count" fill="#6366f1" radius={[4,4,0,0]} />
                 </BarChart>
               </ResponsiveContainer>
             </div>

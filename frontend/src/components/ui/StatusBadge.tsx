@@ -15,8 +15,6 @@ const MAP: Record<string, string> = {
 
 export function StatusBadge({ status, size = 'md' }: Props) {
   const cls = MAP[status] ?? 'badge-slate';
-  const sz  = size === 'sm' ? 'text-[10px] px-1.5 py-0.5' : '';
-  return (
-    <span className={`badge ${cls} ${sz}`}>{status}</span>
-  );
+  const sz  = size === 'sm' ? 'text-[9px] px-1.5 py-0.5' : '';
+  return <span className={`badge ${cls} ${sz} mono`}>{status.toUpperCase()}</span>;
 }

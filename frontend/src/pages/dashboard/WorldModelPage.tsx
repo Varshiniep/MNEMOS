@@ -10,17 +10,16 @@ import { EmptyState } from '../../components/ui/EmptyState';
 import { useRunId } from '../../hooks/useRunId';
 
 export function WorldModelPage() {
-  const [runId]                 = useRunId();
-  const [data, setData]         = useState<WorldStateResponse | null>(null);
-  const [beliefs, setBeliefs]   = useState<Belief[]>([]);
-  const [loading, setLoading]   = useState(false);
-  const [error, setError]       = useState('');
-  const [filter, setFilter]     = useState('');
+  const [runId]               = useRunId();
+  const [data, setData]       = useState<WorldStateResponse | null>(null);
+  const [beliefs, setBeliefs] = useState<Belief[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError]     = useState('');
+  const [filter, setFilter]   = useState('');
   const [activeOnly, setActiveOnly] = useState(false);
 
   const load = useCallback(async () => {
-    if (!runId) return;
-    setLoading(true); setError('');
+    if (!runId) return; setLoading(true); setError('');
     try {
       const [world, bl] = await Promise.all([fetchWorld(runId), fetchBeliefs(runId)]);
       setData(world); setBeliefs(bl.beliefs);
@@ -41,25 +40,30 @@ export function WorldModelPage() {
 
   if (!runId) return (
     <div className="p-8">
-      <EmptyState title="No active run" message="Start a run from the Agent Run page to populate the world model."
+      <EmptyState title="No active run"
+        message="Start a run from the Agent Run page to populate the world model."
         icon={<Globe size={22} />} />
     </div>
   );
 
   return (
-    <div className="p-6 max-w-7xl mx-auto space-y-5">
-      <div className="flex items-center justify-between">
+    <div style={{ padding:'28px 32px', maxWidth:1200, margin:'0 auto' }}>
+      <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:28 }}>
         <div>
-          <h2 className="text-2xl font-black text-white tracking-tight">World Model</h2>
-          <p className="text-sm text-slate-500 mt-0.5">All structured beliefs about the current world</p>
+          <p className="label-overline" style={{ marginBottom:6 }}>Knowledge Base</p>
+          <h2 style={{ fontSize:'clamp(1.5rem,3vw,2.2rem)', fontWeight:900, letterSpacing:'-0.04em', color:'#fff' }}>
+            World Model
+          </h2>
         </div>
-        <button onClick={load} className="btn-ghost p-2" aria-label="Refresh"><RefreshCw size={15} /></button>
+        <button onClick={load} className="btn-ghost" style={{ padding:'7px' }} aria-label="Refresh">
+          <RefreshCw size={14} />
+        </button>
       </div>
 
       {error && <ErrorState message={error} retry={load} />}
 
       {data && (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:12, marginBottom:20 }}>
           <MetricCard label="Total Beliefs"   value={data.belief_count} />
           <MetricCard label="Active"          value={data.active_beliefs} accent />
           <MetricCard label="Superseded"      value={data.superseded_beliefs} />
@@ -67,30 +71,32 @@ export function WorldModelPage() {
         </div>
       )}
 
-      <div className="card overflow-hidden">
+      <div className="card" style={{ overflow:'hidden' }}>
         {/* Toolbar */}
-        <div className="p-4 flex flex-wrap items-center gap-3"
-          style={{ borderBottom: '1px solid var(--border)' }}>
-          <div className="relative flex-1 min-w-[180px]">
-            <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-600" />
-            <input
-              placeholder="Search entity, attribute, value…"
+        <div style={{
+          padding:'14px 16px', display:'flex', flexWrap:'wrap', alignItems:'center', gap:12,
+          borderBottom:'1px solid rgba(255,255,255,0.05)',
+        }}>
+          <div style={{ position:'relative', flex:1, minWidth:200 }}>
+            <Search size={12} style={{ position:'absolute', left:12, top:'50%', transform:'translateY(-50%)', color:'#2d3748' }} />
+            <input placeholder="Search entity, attribute, value…"
               value={filter} onChange={e => setFilter(e.target.value)}
-              className="input-dark pl-8 py-2"
-            />
+              className="input-dark" style={{ paddingLeft:32, paddingTop:8, paddingBottom:8 }} />
           </div>
-          <label className="flex items-center gap-2 text-sm text-slate-400 cursor-pointer">
+          <label style={{ display:'flex', alignItems:'center', gap:8, fontSize:13, color:'#4b5563', cursor:'pointer' }}>
             <input type="checkbox" checked={activeOnly}
               onChange={e => setActiveOnly(e.target.checked)}
-              className="accent-indigo-500 w-3.5 h-3.5" />
+              style={{ accentColor:'#8b5cf6', width:14, height:14 }} />
             Active only
           </label>
-          <span className="text-xs text-slate-600">{filtered.length} of {beliefs.length}</span>
+          <span className="mono" style={{ fontSize:9, color:'#2d3748' }}>
+            {filtered.length}/{beliefs.length}
+          </span>
         </div>
 
         {loading ? <LoadingState /> :
          filtered.length === 0 ? (
-           <div className="py-8">
+           <div style={{ padding:32 }}>
              <EmptyState title="No beliefs found" message="Beliefs are created as the agent explores the environment." />
            </div>
          ) : (

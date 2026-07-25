@@ -4,7 +4,6 @@ import type { WorldSlice } from '../../types/api';
 import { ConfidenceBar } from './ConfidenceBar';
 
 interface Props { slice: WorldSlice }
-
 function val(v: unknown) { return v === null || v === undefined ? '—' : String(v); }
 
 export function ContextViewer({ slice }: Props) {
@@ -27,54 +26,53 @@ export function ContextViewer({ slice }: Props) {
   };
 
   return (
-    <div className="space-y-5">
+    <div style={{ display:'flex', flexDirection:'column', gap:20 }}>
       {/* Notice */}
-      <div className="flex items-start gap-3 p-4 rounded-xl"
-        style={{ background: 'rgba(79,70,229,0.1)', border: '1px solid rgba(79,70,229,0.2)' }}>
-        <div className="w-1.5 h-1.5 rounded-full bg-indigo-400 mt-1.5 flex-shrink-0" />
-        <p className="text-sm text-indigo-300">
+      <div style={{ display:'flex', gap:10, padding:'14px 16px', borderRadius:12, background:'rgba(99,102,241,0.07)', border:'1px solid rgba(99,102,241,0.18)' }}>
+        <div style={{ width:6, height:6, borderRadius:'50%', background:'#6366f1', flexShrink:0, marginTop:6, boxShadow:'0 0 8px #6366f1' }} />
+        <p style={{ fontSize:13, color:'#6366f1', lineHeight:1.6 }}>
           The agent receives <strong>only this bounded slice</strong> — never its full interaction history or the complete world model.
         </p>
       </div>
 
       {/* Metrics */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div style={{ display:'grid', gridTemplateColumns:'repeat(2,1fr)', gap:10 }}>
         {([
-          ['Characters',       slice.metrics.char_count],
-          ['≈ Tokens',         slice.metrics.approx_tokens],
-          ['Beliefs included', slice.metrics.beliefs_included],
-          ['Beliefs excluded', slice.metrics.beliefs_excluded],
+          ['CHARACTERS',       slice.metrics.char_count],
+          ['≈ TOKENS',         slice.metrics.approx_tokens],
+          ['BELIEFS INCLUDED', slice.metrics.beliefs_included],
+          ['BELIEFS EXCLUDED', slice.metrics.beliefs_excluded],
         ] as [string, number][]).map(([label, value]) => (
-          <div key={label} className="card p-4 text-center">
-            <p className="text-2xl font-black text-white">{value}</p>
-            <p className="text-xs text-slate-500 mt-1">{label}</p>
+          <div key={label} className="card" style={{ padding:'16px', textAlign:'center' }}>
+            <p className="mono" style={{ fontSize:'clamp(1.4rem,3vw,1.8rem)', fontWeight:900, color:'#fff' }}>{value}</p>
+            <p className="mono" style={{ fontSize:9, color:'#2d3748', marginTop:6, letterSpacing:'0.12em' }}>{label}</p>
           </div>
         ))}
       </div>
 
-      {/* Fields */}
-      <div className="grid md:grid-cols-2 gap-3">
+      {/* Fields grid */}
+      <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(220px,1fr))', gap:10 }}>
         {[
-          ['Objective',        slice.objective],
-          ['Current Room',     slice.current_room],
-          ['Room Description', slice.room_description],
-          ['Exits',            Object.keys(slice.exits).join(', ') || '—'],
-          ['Visible Objects',  slice.visible_objects.join(', ') || '—'],
-          ['Inventory',        slice.inventory.join(', ') || '(empty)'],
+          ['OBJECTIVE',        slice.objective],
+          ['CURRENT ROOM',     slice.current_room],
+          ['ROOM DESCRIPTION', slice.room_description || '—'],
+          ['EXITS',            Object.keys(slice.exits).join(', ') || '—'],
+          ['VISIBLE OBJECTS',  slice.visible_objects.join(', ') || '—'],
+          ['INVENTORY',        slice.inventory.join(', ') || '(empty)'],
         ].map(([l, v]) => (
-          <div key={l} className="card p-4">
-            <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-600 mb-1">{l}</p>
-            <p className="text-sm text-slate-300">{v || '—'}</p>
+          <div key={l} className="card" style={{ padding:'14px' }}>
+            <p className="mono" style={{ fontSize:9, color:'#2d3748', letterSpacing:'0.12em', marginBottom:6 }}>{l}</p>
+            <p style={{ fontSize:13, color:'#64748b' }}>{v}</p>
           </div>
         ))}
       </div>
 
-      {/* Active beliefs */}
+      {/* Included beliefs */}
       {slice.active_beliefs.length > 0 && (
-        <div className="card overflow-hidden">
-          <div className="px-4 py-3 border-b" style={{ borderColor: 'var(--border)' }}>
-            <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">
-              Included beliefs ({slice.active_beliefs.length})
+        <div className="card" style={{ overflow:'hidden' }}>
+          <div style={{ padding:'12px 16px', borderBottom:'1px solid rgba(255,255,255,0.05)' }}>
+            <p className="mono" style={{ fontSize:9, color:'#374151', letterSpacing:'0.12em' }}>
+              INCLUDED BELIEFS ({slice.active_beliefs.length})
             </p>
           </div>
           <table className="table-dark">
@@ -82,9 +80,9 @@ export function ContextViewer({ slice }: Props) {
             <tbody>
               {slice.active_beliefs.map(b => (
                 <tr key={b.id}>
-                  <td className="font-mono text-xs" style={{ color: '#a78bfa' }}>{b.entity}</td>
-                  <td className="font-mono text-xs text-slate-400">{b.attribute}</td>
-                  <td className="font-mono text-xs text-slate-300">{val(b.value)}</td>
+                  <td className="mono" style={{ fontSize:11, color:'#a78bfa' }}>{b.entity}</td>
+                  <td className="mono" style={{ fontSize:11, color:'#374151' }}>{b.attribute}</td>
+                  <td className="mono" style={{ fontSize:11, color:'#4b5563' }}>{val(b.value)}</td>
                   <td><ConfidenceBar value={b.confidence} /></td>
                 </tr>
               ))}
@@ -95,12 +93,11 @@ export function ContextViewer({ slice }: Props) {
 
       {/* Valid commands */}
       {slice.valid_commands.length > 0 && (
-        <div className="space-y-2">
-          <p className="text-xs font-semibold uppercase tracking-widest text-slate-600">Valid commands</p>
-          <div className="flex flex-wrap gap-1.5">
+        <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
+          <p className="mono" style={{ fontSize:9, color:'#2d3748', letterSpacing:'0.12em' }}>VALID COMMANDS</p>
+          <div style={{ display:'flex', flexWrap:'wrap', gap:6 }}>
             {slice.valid_commands.map(cmd => (
-              <span key={cmd} className="font-mono text-xs px-2.5 py-1 rounded-lg"
-                style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)', color: '#94a3b8' }}>
+              <span key={cmd} className="mono" style={{ fontSize:11, padding:'5px 10px', borderRadius:7, background:'rgba(255,255,255,0.04)', border:'1px solid rgba(255,255,255,0.07)', color:'#4b5563' }}>
                 {cmd}
               </span>
             ))}
@@ -109,18 +106,16 @@ export function ContextViewer({ slice }: Props) {
       )}
 
       {/* Raw prompt */}
-      <div className="card overflow-hidden">
-        <div className="flex items-center justify-between px-4 py-3 border-b"
-          style={{ borderColor: 'var(--border)' }}>
-          <p className="text-xs font-semibold uppercase tracking-widest text-slate-600">Raw Prompt Text</p>
-          <button onClick={copy} className="btn-ghost py-1 px-2 text-xs">
-            {copied ? <><Check size={12} className="text-emerald-400" />Copied</> : <><Copy size={12} />Copy</>}
+      <div className="card" style={{ overflow:'hidden' }}>
+        <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'12px 16px', borderBottom:'1px solid rgba(255,255,255,0.05)' }}>
+          <p className="mono" style={{ fontSize:9, color:'#374151', letterSpacing:'0.12em' }}>RAW PROMPT TEXT</p>
+          <button onClick={copy} className="btn-ghost" style={{ padding:'4px 8px', fontSize:11 }}>
+            {copied
+              ? <><Check size={11} style={{ color:'#10b981' }} />COPIED</>
+              : <><Copy size={11} />COPY</>}
           </button>
         </div>
-        <pre className="p-4 font-mono text-xs text-green-300 whitespace-pre-wrap overflow-x-auto leading-relaxed"
-          style={{ background: '#020817' }}>
-          {rawText}
-        </pre>
+        <pre className="code-block" style={{ borderRadius:0, border:'none', margin:0 }}>{rawText}</pre>
       </div>
     </div>
   );

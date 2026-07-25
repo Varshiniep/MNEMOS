@@ -6,39 +6,58 @@ interface Props { turns: TurnRecord[]; maxVisible?: number }
 export function TurnTimeline({ turns, maxVisible = 20 }: Props) {
   const visible = turns.slice(-maxVisible).reverse();
   if (visible.length === 0) return (
-    <p className="text-sm text-slate-500 py-6 text-center">No turns yet.</p>
+    <p className="mono" style={{ fontSize:10, color:'#2d3748', padding:'24px 0', textAlign:'center', letterSpacing:'0.1em' }}>
+      NO TURNS YET
+    </p>
   );
   return (
-    <div className="space-y-2">
+    <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
       {visible.map(t => (
         <div key={t.turn}
-          className="flex gap-3 items-start p-3 rounded-xl transition-colors hover:bg-white/[0.03]"
-          style={{ border: '1px solid rgba(255,255,255,0.04)' }}>
-          <div className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold"
-            style={{ background: 'rgba(79,70,229,0.25)', color: '#a78bfa' }}>
+          style={{
+            display:'flex', gap:10, alignItems:'flex-start',
+            padding:'10px 12px', borderRadius:10,
+            border:'1px solid rgba(255,255,255,0.04)',
+            background:'rgba(255,255,255,0.015)',
+            transition:'background 0.15s',
+          }}
+        >
+          <div style={{
+            flexShrink:0, width:24, height:24, borderRadius:'50%',
+            display:'flex', alignItems:'center', justifyContent:'center',
+            fontSize:10, fontWeight:700, fontFamily:'monospace',
+            background:'rgba(139,92,246,0.15)', color:'#a78bfa',
+            border:'1px solid rgba(139,92,246,0.2)',
+          }}>
             {t.turn}
           </div>
-          <div className="flex-1 min-w-0 space-y-1">
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className="flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded"
-                style={{ background: 'rgba(79,70,229,0.15)', color: '#a78bfa' }}>
-                <ChevronRight size={9} />{t.action || '[reset]'}
+          <div style={{ flex:1, minWidth:0 }}>
+            <div style={{ display:'flex', gap:6, flexWrap:'wrap', marginBottom:4 }}>
+              <span style={{
+                display:'inline-flex', alignItems:'center', gap:3,
+                fontSize:11, fontWeight:600, padding:'2px 7px', borderRadius:6,
+                background:'rgba(139,92,246,0.1)', color:'#a78bfa',
+                border:'1px solid rgba(139,92,246,0.15)', fontFamily:'monospace',
+              }}>
+                <ChevronRight size={8} />{t.action || '[RESET]'}
               </span>
               {t.reward > 0 && (
-                <span className="badge badge-green flex items-center gap-1">
-                  <Zap size={9} />+{t.reward}
+                <span className="badge badge-green" style={{ fontSize:9 }}>
+                  <Zap size={8} />+{t.reward}
                 </span>
               )}
               {t.corrections.length > 0 && (
-                <span className="badge badge-amber flex items-center gap-1">
-                  <AlertCircle size={9} />{t.corrections.length} correction{t.corrections.length > 1 ? 's' : ''}
+                <span className="badge badge-amber" style={{ fontSize:9 }}>
+                  <AlertCircle size={8} />{t.corrections.length} CORRECTION{t.corrections.length > 1 ? 'S' : ''}
                 </span>
               )}
               {t.approx_tokens > 0 && (
-                <span className="text-[10px] text-slate-600">~{t.approx_tokens}t</span>
+                <span className="mono" style={{ fontSize:9, color:'#2d3748' }}>~{t.approx_tokens}T</span>
               )}
             </div>
-            <p className="text-xs text-slate-600 truncate">{t.observation?.slice(0, 100)}</p>
+            <p style={{ fontSize:11, color:'#2d3748', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
+              {t.observation?.slice(0, 90)}
+            </p>
           </div>
         </div>
       ))}
