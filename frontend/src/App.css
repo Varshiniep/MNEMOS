@@ -1,1 +1,800 @@
-/* App.css — intentionally minimal; all styles use Tailwind classes */
+:root {
+  font-family:
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+
+  color: #f8fafc;
+  background: #050810;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-width: 320px;
+  min-height: 100%;
+  background: #050810;
+  scroll-behavior: smooth;
+}
+
+body {
+  min-width: 320px;
+  min-height: 100vh;
+  margin: 0;
+
+  color: #f8fafc;
+
+  background:
+    radial-gradient(
+      circle at 20% 0%,
+      rgba(124, 58, 237, 0.08),
+      transparent 30%
+    ),
+    #050810;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button {
+  border: 0;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+/* =====================================================
+   MNEMOS CINEMATIC INTRO
+   ===================================================== */
+
+.mnemos-intro {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+
+  display: grid;
+  width: 100%;
+  min-height: 100dvh;
+  place-items: center;
+  overflow: hidden;
+
+  color: #f8fafc;
+
+  background:
+    radial-gradient(
+      circle at 50% 46%,
+      rgba(76, 29, 149, 0.16),
+      transparent 31%
+    ),
+    linear-gradient(
+      135deg,
+      #02040a 0%,
+      #050813 48%,
+      #02040a 100%
+    );
+
+  opacity: 1;
+  transform: scale(1);
+
+  transition:
+    opacity 850ms ease,
+    transform 850ms
+      cubic-bezier(0.4, 0, 0.2, 1),
+    filter 850ms ease;
+
+  isolation: isolate;
+}
+
+.mnemos-intro--exiting {
+  opacity: 0;
+  transform: scale(1.025);
+  filter: blur(8px);
+  pointer-events: none;
+}
+
+.mnemos-intro__canvas {
+  position: absolute;
+  inset: 0;
+  z-index: -4;
+  width: 100%;
+  height: 100%;
+}
+
+.mnemos-intro__grid {
+  position: absolute;
+  inset: 0;
+  z-index: -3;
+
+  opacity: 0.18;
+
+  background-image:
+    linear-gradient(
+      rgba(148, 163, 184, 0.045)
+        1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      rgba(148, 163, 184, 0.045)
+        1px,
+      transparent 1px
+    );
+
+  background-size: 64px 64px;
+
+  mask-image: radial-gradient(
+    circle at center,
+    black 0%,
+    transparent 73%
+  );
+}
+
+.mnemos-intro__aurora {
+  position: absolute;
+  z-index: -2;
+
+  width: 520px;
+  height: 520px;
+
+  border-radius: 50%;
+  filter: blur(130px);
+  opacity: 0.13;
+  pointer-events: none;
+}
+
+.mnemos-intro__aurora--one {
+  top: -260px;
+  left: -160px;
+  background: #7c3aed;
+
+  animation:
+    mnemosAuroraOne
+    9s ease-in-out infinite;
+}
+
+.mnemos-intro__aurora--two {
+  right: -180px;
+  bottom: -260px;
+  background: #22d3ee;
+
+  animation:
+    mnemosAuroraTwo
+    10s ease-in-out infinite;
+}
+
+.mnemos-intro__skip {
+  position: absolute;
+  top: 30px;
+  right: 38px;
+  z-index: 10;
+
+  padding: 10px 16px;
+
+  border:
+    1px solid
+    rgba(148, 163, 184, 0.16);
+
+  border-radius: 999px;
+
+  color: #94a3b8;
+
+  background:
+    rgba(7, 12, 23, 0.62);
+
+  backdrop-filter: blur(16px);
+
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+
+  cursor: pointer;
+
+  transition:
+    color 180ms ease,
+    border-color 180ms ease,
+    background 180ms ease,
+    transform 180ms ease;
+}
+
+.mnemos-intro__skip:hover {
+  color: #ffffff;
+
+  border-color:
+    rgba(139, 92, 246, 0.58);
+
+  background:
+    rgba(124, 58, 237, 0.14);
+
+  transform: translateY(-2px);
+}
+
+.mnemos-intro__content {
+  position: relative;
+
+  display: flex;
+  width: min(92vw, 920px);
+  min-height: 680px;
+  padding: 60px 32px 45px;
+
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  text-align: center;
+}
+
+.mnemos-intro__seed {
+  position: absolute;
+  top: 210px;
+  left: 50%;
+
+  width: 52px;
+  height: 52px;
+
+  opacity: 0;
+
+  transform:
+    translateX(-50%)
+    scale(0.35);
+
+  transition:
+    opacity 800ms ease,
+    transform 1.2s
+      cubic-bezier(0.16, 1, 0.3, 1),
+    filter 800ms ease;
+}
+
+.mnemos-intro__seed.is-visible {
+  opacity: 1;
+
+  transform:
+    translateX(-50%)
+    scale(1);
+}
+
+.mnemos-intro__seed.is-expanded {
+  opacity: 0;
+
+  transform:
+    translateX(-50%)
+    scale(2.8);
+
+  filter: blur(12px);
+}
+
+.mnemos-intro__seed-core {
+  position: absolute;
+  inset: 17px;
+  display: block;
+
+  border-radius: 50%;
+  background: #f8fafc;
+
+  box-shadow:
+    0 0 14px
+      rgba(255, 255, 255, 0.86),
+    0 0 36px
+      rgba(139, 92, 246, 0.9),
+    0 0 72px
+      rgba(124, 58, 237, 0.46);
+
+  animation:
+    mnemosCorePulse
+    1.7s ease-in-out infinite;
+}
+
+.mnemos-intro__seed-ring {
+  position: absolute;
+  inset: 0;
+  display: block;
+
+  border:
+    1px solid
+    rgba(139, 92, 246, 0.68);
+
+  border-radius: 50%;
+
+  animation:
+    mnemosRing
+    2.4s ease-out infinite;
+}
+
+.mnemos-intro__seed-ring--two {
+  animation-delay: 0.7s;
+}
+
+.mnemos-intro__seed-ring--three {
+  animation-delay: 1.4s;
+}
+
+.mnemos-intro__logo {
+  position: relative;
+
+  display: grid;
+  width: 112px;
+  height: 112px;
+  margin-bottom: 20px;
+
+  place-items: center;
+
+  opacity: 0;
+
+  transform:
+    translateY(16px)
+    scale(0.68)
+    rotate(-8deg);
+
+  filter: blur(12px);
+
+  transition:
+    opacity 900ms ease,
+    transform 1.15s
+      cubic-bezier(0.16, 1, 0.3, 1),
+    filter 900ms ease;
+}
+
+.mnemos-intro__logo.is-visible {
+  opacity: 1;
+
+  transform:
+    translateY(0)
+    scale(1)
+    rotate(0deg);
+
+  filter: blur(0);
+}
+
+.mnemos-intro__logo-glow {
+  position: absolute;
+  inset: 12px;
+  z-index: -1;
+
+  border-radius: 50%;
+
+  background:
+    rgba(124, 58, 237, 0.42);
+
+  filter: blur(28px);
+
+  animation:
+    mnemosLogoGlow
+    2.4s ease-in-out infinite;
+}
+
+.mnemos-intro__eyebrow {
+  margin: 0 0 13px;
+
+  color: #8b5cf6;
+
+  font-family:
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    Monaco,
+    Consolas,
+    monospace;
+
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.34em;
+
+  opacity: 0;
+  transform: translateY(10px);
+
+  transition:
+    opacity 650ms ease,
+    transform 650ms ease;
+}
+
+.mnemos-intro__eyebrow.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.mnemos-intro__title {
+  margin: 0;
+
+  color: #ffffff;
+
+  font-size:
+    clamp(64px, 10vw, 128px);
+
+  font-weight: 850;
+  line-height: 0.88;
+  letter-spacing: -0.07em;
+
+  opacity: 0;
+
+  transform:
+    translateY(28px)
+    scale(0.92);
+
+  filter: blur(12px);
+
+  text-shadow:
+    0 0 30px
+      rgba(139, 92, 246, 0.2),
+    0 12px 50px
+      rgba(0, 0, 0, 0.72);
+
+  transition:
+    opacity 950ms ease,
+    transform 1.05s
+      cubic-bezier(0.16, 1, 0.3, 1),
+    filter 950ms ease;
+}
+
+.mnemos-intro__title.is-visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  filter: blur(0);
+}
+
+.mnemos-intro__subtitle {
+  display: flex;
+  margin-top: 26px;
+
+  flex-direction: column;
+  gap: 5px;
+
+  color: #cbd5e1;
+
+  font-size:
+    clamp(15px, 2vw, 22px);
+
+  font-weight: 500;
+  line-height: 1.42;
+  letter-spacing: 0.115em;
+
+  opacity: 0;
+  transform: translateY(18px);
+
+  transition:
+    opacity 850ms ease,
+    transform 850ms ease;
+}
+
+.mnemos-intro__subtitle.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.mnemos-intro__tagline {
+  display: flex;
+  margin: 25px 0 0;
+
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 11px;
+
+  color: #64748b;
+
+  font-family:
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    Monaco,
+    Consolas,
+    monospace;
+
+  font-size:
+    clamp(9px, 1.3vw, 12px);
+
+  font-weight: 700;
+  letter-spacing: 0.16em;
+
+  opacity: 0;
+  transform: translateY(14px);
+
+  transition:
+    opacity 750ms ease,
+    transform 750ms ease;
+}
+
+.mnemos-intro__tagline span {
+  color: #7c3aed;
+}
+
+.mnemos-intro__tagline.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.mnemos-intro__loader {
+  width: min(540px, 82vw);
+  margin-top: 50px;
+
+  opacity: 0;
+  transform: translateY(12px);
+
+  transition:
+    opacity 700ms ease,
+    transform 700ms ease;
+}
+
+.mnemos-intro__loader.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.mnemos-intro__loader-track {
+  position: relative;
+
+  width: 100%;
+  height: 2px;
+
+  overflow: hidden;
+  border-radius: 999px;
+
+  background:
+    rgba(148, 163, 184, 0.12);
+}
+
+.mnemos-intro__loader-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+
+  height: 100%;
+  border-radius: inherit;
+
+  background:
+    linear-gradient(
+      90deg,
+      #6366f1,
+      #8b5cf6 52%,
+      #22d3ee
+    );
+
+  box-shadow:
+    0 0 12px
+      rgba(124, 58, 237, 0.92),
+    0 0 26px
+      rgba(34, 211, 238, 0.42);
+
+  transition: width 90ms linear;
+}
+
+.mnemos-intro__loader-fill::after {
+  position: absolute;
+  top: 50%;
+  right: -4px;
+
+  width: 8px;
+  height: 8px;
+
+  border-radius: 50%;
+  background: #ffffff;
+
+  box-shadow:
+    0 0 12px #ffffff,
+    0 0 24px #8b5cf6;
+
+  content: "";
+
+  transform: translateY(-50%);
+}
+
+.mnemos-intro__loader-meta {
+  display: flex;
+  margin-top: 13px;
+
+  align-items: center;
+  justify-content: space-between;
+
+  color: #475569;
+
+  font-family:
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    Monaco,
+    Consolas,
+    monospace;
+
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.17em;
+}
+
+.mnemos-intro__status {
+  position: absolute;
+  right: 38px;
+  bottom: 29px;
+
+  display: flex;
+  align-items: center;
+  gap: 9px;
+
+  color: #64748b;
+
+  font-family:
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    Monaco,
+    Consolas,
+    monospace;
+
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+
+  opacity: 0;
+  transform: translateY(10px);
+
+  transition:
+    opacity 600ms ease,
+    transform 600ms ease;
+}
+
+.mnemos-intro__status.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.mnemos-intro__status span {
+  width: 7px;
+  height: 7px;
+
+  border-radius: 50%;
+  background: #10b981;
+
+  box-shadow:
+    0 0 14px
+      rgba(16, 185, 129, 0.92);
+
+  animation:
+    mnemosStatusPulse
+    1.6s ease-in-out infinite;
+}
+
+@keyframes mnemosCorePulse {
+  0%,
+  100% {
+    opacity: 0.82;
+    transform: scale(0.88);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+}
+
+@keyframes mnemosRing {
+  0% {
+    opacity: 0.72;
+    transform: scale(0.45);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(2.25);
+  }
+}
+
+@keyframes mnemosLogoGlow {
+  0%,
+  100% {
+    opacity: 0.45;
+    transform: scale(0.88);
+  }
+
+  50% {
+    opacity: 0.82;
+    transform: scale(1.12);
+  }
+}
+
+@keyframes mnemosStatusPulse {
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes mnemosAuroraOne {
+  0%,
+  100% {
+    transform:
+      translate3d(0, 0, 0);
+  }
+
+  50% {
+    transform:
+      translate3d(90px, 60px, 0);
+  }
+}
+
+@keyframes mnemosAuroraTwo {
+  0%,
+  100% {
+    transform:
+      translate3d(0, 0, 0);
+  }
+
+  50% {
+    transform:
+      translate3d(-90px, -55px, 0);
+  }
+}
+
+@media (max-width: 700px) {
+  .mnemos-intro__content {
+    min-height: 600px;
+    padding-inline: 22px;
+  }
+
+  .mnemos-intro__logo {
+    width: 92px;
+    height: 92px;
+  }
+
+  .mnemos-intro__title {
+    font-size:
+      clamp(56px, 18vw, 82px);
+  }
+
+  .mnemos-intro__subtitle {
+    font-size: 14px;
+    letter-spacing: 0.085em;
+  }
+
+  .mnemos-intro__tagline {
+    max-width: 360px;
+    font-size: 8px;
+    line-height: 1.8;
+  }
+
+  .mnemos-intro__skip {
+    top: 20px;
+    right: 20px;
+  }
+
+  .mnemos-intro__status {
+    right: 20px;
+    bottom: 20px;
+  }
+}
+
+@media (
+  prefers-reduced-motion: reduce
+) {
+  .mnemos-intro *,
+  .mnemos-intro *::before,
+  .mnemos-intro *::after {
+    animation-duration:
+      0.01ms !important;
+
+    animation-iteration-count:
+      1 !important;
+
+    transition-duration:
+      0.01ms !important;
+  }
+}

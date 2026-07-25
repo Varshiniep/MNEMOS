@@ -41,137 +41,263 @@ function Navbar() {
 function Hero() {
   const navigate = useNavigate();
   return (
-    <section className="relative min-h-screen flex flex-col overflow-hidden" style={{ paddingTop: 64 }}>
-      {/* Stars */}
-      <div className="absolute inset-0"><StarField density={220} /></div>
+    <section
+      className="relative flex flex-col overflow-hidden"
+      style={{ paddingTop: 64, paddingBottom: 80, minHeight: '100vh' }}
+    >
+      {/* Star field */}
+      <div className="absolute inset-0"><StarField density={180} /></div>
 
-      {/* Vertical split line */}
-      <div className="absolute inset-0 hidden lg:flex items-stretch pointer-events-none z-10">
-        <div style={{ flex: '1 1 50%' }} />
-        <div className="split-line" style={{ height: '100%' }} />
-        <div style={{ flex: '1 1 50%' }} />
-      </div>
+      {/* Central radial glow */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background:
+            'radial-gradient(ellipse 70% 55% at 50% 42%, rgba(99,102,241,0.09) 0%, transparent 70%)',
+        }}
+      />
 
-      {/* Glow blobs */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div style={{
-          position:'absolute', width:600, height:600,
-          background:'radial-gradient(circle, rgba(99,102,241,0.07) 0%, transparent 70%)',
-          top:'10%', left:'5%',
-        }} />
-        <div style={{
-          position:'absolute', width:500, height:500,
-          background:'radial-gradient(circle, rgba(6,182,212,0.06) 0%, transparent 70%)',
-          top:'20%', right:'5%',
-        }} />
-      </div>
-
-      {/* Content */}
-      <div className="relative z-20 flex-1 flex items-center">
-        <div className="container">
-          <div className="grid lg:grid-cols-2 gap-0 min-h-[80vh] items-center">
-
-            {/* LEFT — old/uncertain side */}
-            <div className="py-20 pr-0 lg:pr-16 space-y-10">
-              {/* Status badge */}
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full"
-                style={{ background:'rgba(16,185,129,0.08)', border:'1px solid rgba(16,185,129,0.2)' }}>
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-blink" />
-                <span className="mono" style={{ fontSize: 10, color: '#34d399', letterSpacing: '0.15em' }}>
-                  LOCAL-FIRST · CPU-READY · CONTEXT-BOUNDED
-                </span>
-              </div>
-
-              {/* Main headline */}
-              <div className="space-y-2">
-                <h1 className="heading-hero text-white">
-                  MNEMOS
-                </h1>
-                <h2 style={{
-                  fontSize: 'clamp(1rem, 2.5vw, 1.6rem)',
-                  fontWeight: 300,
-                  color: '#64748b',
-                  letterSpacing: '0.05em',
-                  textTransform: 'uppercase',
-                  lineHeight: 1.4,
-                }}>
-                  A SELF-CORRECTING WORLD MODEL<br />
-                  FOR AUTONOMOUS AGENTS
-                </h2>
-              </div>
-
-              <p style={{ fontSize: 16, color: '#64748b', lineHeight: 1.75, maxWidth: 480 }}>
-                Bounded context. Versioned beliefs. Transparent correction.
-                Agents reason without ever re-reading their full history.
-              </p>
-
-              <div className="flex flex-wrap gap-3">
-                <button onClick={() => navigate('/login')} className="btn-primary" style={{ fontSize: 15, padding: '13px 28px' }}>
-                  <Zap size={16} /> LAUNCH LIVE DEMO
-                </button>
-                <a href="#how-it-works" className="btn-outline" style={{ fontSize: 15, padding: '13px 28px' }}>
-                  EXPLORE ARCHITECTURE <ArrowRight size={15} />
-                </a>
-              </div>
-
-              {/* OLD BELIEF card */}
-              <div className="relative overflow-hidden rounded-xl p-4 max-w-sm"
-                style={{ background:'rgba(239,68,68,0.05)', border:'1px solid rgba(239,68,68,0.2)' }}>
-                <p className="label-overline mb-2" style={{ color: '#f87171' }}>OLD BELIEF</p>
-                <p className="mono text-sm" style={{ color: '#f1f5f9' }}>"The east door is locked"</p>
-                <div className="flex items-center gap-2 mt-2">
-                  <span className="badge badge-red">superseded</span>
-                  <span className="mono" style={{ fontSize: 10, color: '#6b7280' }}>CONFIDENCE 0.62</span>
-                </div>
-              </div>
+      {/* Content — centred column */}
+      <div
+        className="relative z-10 flex-1 flex items-center"
+        style={{ paddingTop: 48 }}
+      >
+        <div
+          className="container"
+          style={{ maxWidth: 1180 }}
+        >
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              textAlign: 'center',
+              gap: 32,
+            }}
+          >
+            {/* Status badge */}
+            <div
+              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full"
+              style={{
+                background: 'rgba(16,185,129,0.08)',
+                border: '1px solid rgba(16,185,129,0.2)',
+              }}
+            >
+              <span
+                className="w-1.5 h-1.5 rounded-full animate-blink"
+                style={{ background: '#34d399' }}
+              />
+              <span
+                className="mono"
+                style={{ fontSize: 10, color: '#34d399', letterSpacing: '0.15em' }}
+              >
+                LOCAL-FIRST · CPU-READY · CONTEXT-BOUNDED
+              </span>
             </div>
 
-            {/* RIGHT — corrected side */}
-            <div className="py-20 pl-0 lg:pl-16 space-y-10">
-              {/* World graph */}
-              <div className="relative">
-                <div className="absolute inset-0 rounded-2xl glow-violet opacity-30 blur-3xl pointer-events-none" />
-                <div className="relative rounded-2xl p-6" style={{
-                  background: 'rgba(13,17,32,0.9)',
-                  border: '1px solid rgba(139,92,246,0.2)',
+            {/* Title */}
+            <h1
+              className="heading-hero text-white"
+              style={{ maxWidth: 820 }}
+            >
+              MNEMOS
+            </h1>
+
+            {/* Subtitle */}
+            <h2
+              style={{
+                fontSize: 'clamp(1rem, 2.2vw, 1.45rem)',
+                fontWeight: 300,
+                color: '#64748b',
+                letterSpacing: '0.06em',
+                textTransform: 'uppercase',
+                lineHeight: 1.5,
+                maxWidth: 640,
+              }}
+            >
+              A Self-Correcting World Model<br />
+              for Autonomous Agents
+            </h2>
+
+            {/* Description */}
+            <p
+              style={{
+                fontSize: 16,
+                color: '#64748b',
+                lineHeight: 1.75,
+                maxWidth: 520,
+              }}
+            >
+              Bounded context. Versioned beliefs. Transparent correction.
+              Agents reason without ever re-reading their full history.
+            </p>
+
+            {/* CTA buttons */}
+            <div className="flex flex-wrap justify-center gap-3">
+              <button
+                onClick={() => navigate('/login')}
+                className="btn-primary"
+                style={{ fontSize: 15, padding: '13px 28px' }}
+              >
+                <Zap size={16} /> LAUNCH LIVE DEMO
+              </button>
+              <a
+                href="#how-it-works"
+                className="btn-outline"
+                style={{ fontSize: 15, padding: '13px 28px' }}
+              >
+                EXPLORE ARCHITECTURE <ArrowRight size={15} />
+              </a>
+            </div>
+
+            {/* World graph card */}
+            <div
+              style={{
+                position: 'relative',
+                width: '100%',
+                maxWidth: 560,
+                marginTop: 8,
+              }}
+            >
+              {/* Soft glow behind card */}
+              <div
+                className="absolute inset-0 pointer-events-none"
+                style={{
+                  borderRadius: 20,
+                  background: 'rgba(124,58,237,0.12)',
+                  filter: 'blur(40px)',
+                  transform: 'scale(0.9)',
+                }}
+              />
+              <div
+                style={{
+                  position: 'relative',
+                  borderRadius: 16,
+                  padding: 24,
+                  background: 'rgba(13,17,32,0.88)',
+                  border: '1px solid rgba(139,92,246,0.22)',
                   backdropFilter: 'blur(12px)',
-                }}>
-                  <p className="label-overline mb-4">WORLD GRAPH — LIVE STRUCTURE</p>
-                  <NodeGraph width={380} height={220} animate />
-                </div>
-              </div>
-
-              {/* CORRECTED BELIEF card */}
-              <div className="relative overflow-hidden rounded-xl p-4 max-w-sm ml-auto"
-                style={{ background:'rgba(16,185,129,0.05)', border:'1px solid rgba(16,185,129,0.25)' }}>
-                <p className="label-overline mb-2" style={{ color: '#34d399' }}>CORRECTED BELIEF</p>
-                <p className="mono text-sm" style={{ color: '#f1f5f9' }}>"The east door is open"</p>
-                <div className="flex items-center gap-3 mt-2">
-                  <span className="badge badge-green">active</span>
-                  <span className="mono" style={{ fontSize: 10, color: '#6b7280' }}>CONFIDENCE 0.96</span>
-                </div>
-                <p className="mono mt-2" style={{ fontSize: 10, color: '#4b5563' }}>
-                  Reason: environment contradicted previous observation.
+                }}
+              >
+                <p className="label-overline" style={{ marginBottom: 16 }}>
+                  WORLD GRAPH — LIVE STRUCTURE
                 </p>
+                <NodeGraph width={480} height={200} animate />
+              </div>
+            </div>
+
+            {/* Belief correction card */}
+            <div
+              style={{
+                width: '100%',
+                maxWidth: 560,
+                borderRadius: 14,
+                overflow: 'hidden',
+                border: '1px solid rgba(255,255,255,0.07)',
+                background: 'rgba(10,14,26,0.85)',
+                backdropFilter: 'blur(12px)',
+              }}
+            >
+              {/* Old belief row */}
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 12,
+                  padding: '14px 20px',
+                  borderBottom: '1px solid rgba(239,68,68,0.15)',
+                  background: 'rgba(239,68,68,0.04)',
+                }}
+              >
+                <span className="badge badge-red" style={{ flexShrink: 0 }}>
+                  superseded
+                </span>
+                <span
+                  className="mono"
+                  style={{ fontSize: 13, color: '#94a3b8', flex: 1, textAlign: 'left' }}
+                >
+                  wooden_door.locked ={' '}
+                  <span style={{ color: '#f87171', textDecoration: 'line-through' }}>
+                    true
+                  </span>
+                </span>
+                <span className="mono" style={{ fontSize: 10, color: '#4b5563', flexShrink: 0 }}>
+                  CONF 0.70
+                </span>
               </div>
 
-              {/* Superseded arrow hint */}
-              <div className="flex items-center gap-2 ml-4">
-                <div style={{ width:2, height:40, background:'linear-gradient(180deg,rgba(239,68,68,0.5),rgba(139,92,246,0.5),rgba(16,185,129,0.5))' }} />
-                <span className="mono" style={{ fontSize: 10, color: '#374151' }}>
-                  SUPERSEDED → CORRECTED
+              {/* Connector */}
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  padding: '6px 20px',
+                  background: 'rgba(139,92,246,0.04)',
+                }}
+              >
+                <div
+                  style={{
+                    width: 1,
+                    height: 16,
+                    background:
+                      'linear-gradient(180deg,rgba(239,68,68,0.5),rgba(139,92,246,0.5))',
+                    marginLeft: 24,
+                  }}
+                />
+                <span
+                  className="mono"
+                  style={{ fontSize: 9, color: '#4b5563', letterSpacing: '0.12em' }}
+                >
+                  BELIEF CORRECTED
+                </span>
+              </div>
+
+              {/* New belief row */}
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 12,
+                  padding: '14px 20px',
+                  background: 'rgba(16,185,129,0.04)',
+                }}
+              >
+                <span className="badge badge-green" style={{ flexShrink: 0 }}>
+                  active
+                </span>
+                <span
+                  className="mono"
+                  style={{ fontSize: 13, color: '#94a3b8', flex: 1, textAlign: 'left' }}
+                >
+                  wooden_door.locked ={' '}
+                  <span style={{ color: '#34d399' }}>false</span>
+                </span>
+                <span className="mono" style={{ fontSize: 10, color: '#4b5563', flexShrink: 0 }}>
+                  CONF 0.95
                 </span>
               </div>
             </div>
+
           </div>
         </div>
       </div>
 
       {/* Scroll cue */}
-      <div className="relative z-20 flex justify-center pb-12 pointer-events-none">
+      <div className="relative z-10 flex justify-center pt-10 pointer-events-none">
         <div className="flex flex-col items-center gap-2">
-          <div className="w-px h-8 bg-gradient-to-b from-transparent to-slate-700" />
-          <span className="mono" style={{ fontSize: 9, color: '#374151', letterSpacing: '0.2em' }}>SCROLL</span>
+          <div
+            className="w-px h-8"
+            style={{
+              background: 'linear-gradient(to bottom, transparent, rgba(100,116,139,0.5))',
+            }}
+          />
+          <span
+            className="mono"
+            style={{ fontSize: 9, color: '#374151', letterSpacing: '0.2em' }}
+          >
+            SCROLL
+          </span>
         </div>
       </div>
     </section>
