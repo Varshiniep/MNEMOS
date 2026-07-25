@@ -5,6 +5,8 @@ import {
   useState,
 } from "react";
 
+import "./IntroSplash.css";
+
 import { MnemosLogo } from "./MnemosLogo";
 import { markIntroShown } from "./introStorage";
 

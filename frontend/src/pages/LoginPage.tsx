@@ -1,175 +1,944 @@
-import { useState, type FormEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Eye, EyeOff, Zap, Shield, GitBranch, Brain } from 'lucide-react';
-import { loginWithCredentials, loginAsDemo } from '../hooks/useAuth';
-import { MnemosLogo } from '../components/brand/MnemosLogo';
-import { NodeGraph } from '../components/brand/NodeGraph';
-import { StarField } from '../components/brand/StarField';
+import { useState, type FormEvent } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  ArrowLeft,
+  Brain,
+  Eye,
+  EyeOff,
+  GitBranch,
+  Shield,
+  Sparkles,
+  Zap,
+} from "lucide-react";
+
+import {
+  loginAsDemo,
+  loginWithCredentials,
+} from "../hooks/useAuth";
+
+import { MnemosLogo } from "../components/brand/MnemosLogo";
+import { NodeGraph } from "../components/brand/NodeGraph";
+import { StarField } from "../components/brand/StarField";
 
 export function LoginPage() {
   const navigate = useNavigate();
-  const [email, setEmail]       = useState('');
-  const [password, setPassword] = useState('');
-  const [showPass, setShowPass] = useState(false);
-  const [loading, setLoading]   = useState(false);
-  const [error, setError]       = useState('');
 
-  const handleSubmit = (e: FormEvent) => {
-    e.preventDefault();
-    setLoading(true); setError('');
-    setTimeout(() => {
-      const result = loginWithCredentials(email, password);
-      if (result.ok) navigate('/dashboard');
-      else setError(result.error);
-      setLoading(false);
-    }, 600);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPass, setShowPass] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleSubmit = async (
+  event: FormEvent<HTMLFormElement>
+) => {
+  event.preventDefault();
+
+  setLoading(true);
+  setError("");
+
+  try {
+    const result = await loginWithCredentials(
+      email,
+      password
+    );
+
+    if (!result.ok) {
+  setError(
+    "message" in result && typeof result.message === "string"
+      ? result.message
+      : "Login failed"
+  );
+  return;
+}
+
+    navigate("/dashboard");
+  } catch {
+    setError("Login failed");
+  } finally {
+    setLoading(false);
+  }
+};
+
+  const handleDemo = () => {
+    loginAsDemo();
+    navigate("/dashboard");
   };
 
-  const handleDemo = () => { loginAsDemo(); navigate('/dashboard'); };
-
   return (
-    <div className="min-h-screen flex" style={{ background: '#000' }}>
-      {/* Left panel */}
-      <div className="hidden lg:flex lg:w-1/2 flex-col justify-between p-14 relative overflow-hidden"
-        style={{ background: 'rgba(5,7,18,1)' }}>
-        <div className="absolute inset-0"><StarField density={140} /></div>
-        <div className="absolute inset-0 pointer-events-none" style={{
-          background: 'radial-gradient(ellipse at 30% 50%, rgba(99,102,241,0.08) 0%, transparent 60%)',
-        }} />
+    <main
+      style={{
+        minHeight: "100vh",
+        overflow: "hidden",
+        background:
+          "linear-gradient(135deg, #02050b 0%, #030711 48%, #02040a 100%)",
+      }}
+    >
+      <div
+        className="grid min-h-screen lg:grid-cols-2"
+        style={{ position: "relative" }}
+      >
+        {/* =====================================================
+            LEFT BRAND PANEL
+            ===================================================== */}
 
-        <div className="relative z-10"><MnemosLogo size={40} variant="full" /></div>
-
-        <div className="relative z-10 space-y-10">
-          <div className="space-y-4">
-            <h2 style={{ fontSize:'clamp(1.8rem,3vw,2.8rem)', fontWeight:900, letterSpacing:'-0.04em', lineHeight:1.1, color:'#fff' }}>
-              Give your agents a memory<br />
-              <span className="gradient-text">that corrects itself.</span>
-            </h2>
-            <p style={{ fontSize:15, color:'#374151', lineHeight:1.7, maxWidth:400 }}>
-              MNEMOS provides structured, self-correcting world models — eliminating
-              context bloat and hidden contradictions.
-            </p>
+        <section
+          className="hidden lg:flex relative flex-col overflow-hidden"
+          style={{
+            minHeight: "100vh",
+            padding: "44px 56px",
+            background:
+              "linear-gradient(160deg, rgba(8,12,25,0.98), rgba(3,6,15,0.99))",
+            borderRight:
+              "1px solid rgba(148,163,184,0.07)",
+          }}
+        >
+          <div className="absolute inset-0">
+            <StarField density={150} />
           </div>
 
-          <div className="rounded-2xl overflow-hidden" style={{
-            border:'1px solid rgba(139,92,246,0.15)',
-            background:'rgba(10,13,26,0.8)',
-          }}>
-            <NodeGraph width={360} height={200} animate />
-          </div>
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              background:
+                "radial-gradient(circle at 35% 40%, rgba(124,58,237,0.15), transparent 37%), radial-gradient(circle at 70% 75%, rgba(34,211,238,0.06), transparent 34%)",
+            }}
+          />
 
-          <div className="space-y-4">
-            {[
-              { icon: Brain,     color:'#8b5cf6', label:'Bounded Context',    desc:'Only relevant facts reach the agent' },
-              { icon: GitBranch, color:'#06b6d4', label:'Versioned Beliefs',  desc:'Every correction is preserved' },
-              { icon: Shield,    color:'#f59e0b', label:'Auditable Reasoning',desc:'Full correction trail, always visible' },
-            ].map(({ icon: Icon, color, label, desc }) => (
-              <div key={label} className="flex items-center gap-4">
-                <div className="w-9 h-9 rounded-xl flex-shrink-0 flex items-center justify-center"
-                  style={{ background:`${color}15`, border:`1px solid ${color}25` }}>
-                  <Icon size={16} style={{ color }} />
-                </div>
-                <div>
-                  <p style={{ fontSize:13, fontWeight:600, color:'#e2e8f0' }}>{label}</p>
-                  <p style={{ fontSize:12, color:'#374151' }}>{desc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+          <div
+            className="absolute inset-0 grid-bg opacity-20 pointer-events-none"
+            aria-hidden="true"
+          />
 
-        <div className="relative z-10 mono" style={{ fontSize:9, color:'#1f2937', letterSpacing:'0.15em' }}>
-          HACKTRONIX 2.0 · TRACK B — ARTIFICIAL INTELLIGENCE · LOCAL-FIRST
-        </div>
-      </div>
-
-      {/* Right panel */}
-      <div className="flex-1 flex items-center justify-center p-8 relative"
-        style={{ background: '#030308' }}>
-        <div className="w-full max-w-md space-y-8">
-          <div className="lg:hidden flex justify-center mb-4">
-            <MnemosLogo size={44} variant="full" />
-          </div>
-
-          <div>
-            <h1 style={{ fontSize:28, fontWeight:800, letterSpacing:'-0.03em', color:'#fff' }}>
-              Welcome back
-            </h1>
-            <p style={{ fontSize:14, color:'#374151', marginTop:6 }}>
-              Sign in to the MNEMOS research dashboard
-            </p>
-          </div>
-
-          {/* Demo hint */}
-          <div className="rounded-xl p-4" style={{
-            background:'rgba(99,102,241,0.06)', border:'1px solid rgba(99,102,241,0.18)',
-          }}>
-            <p className="mono" style={{ fontSize:9, color:'#6366f1', letterSpacing:'0.15em', marginBottom:6 }}>
-              DEMO CREDENTIALS
-            </p>
-            <p className="mono" style={{ fontSize:12, color:'#4b5563' }}>
-              demo@mnemos.ai / mnemos123
-            </p>
-          </div>
-
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label style={{ display:'block', fontSize:11, color:'#374151', marginBottom:6, letterSpacing:'0.05em' }}>
-                EMAIL ADDRESS
-              </label>
-              <input type="email" value={email} onChange={e => setEmail(e.target.value)}
-                placeholder="demo@mnemos.ai" required className="input-dark" autoComplete="email" />
-            </div>
-
-            <div>
-              <label style={{ display:'block', fontSize:11, color:'#374151', marginBottom:6, letterSpacing:'0.05em' }}>
-                PASSWORD
-              </label>
-              <div className="relative">
-                <input type={showPass ? 'text' : 'password'} value={password}
-                  onChange={e => setPassword(e.target.value)}
-                  placeholder="••••••••" required className="input-dark pr-10"
-                  autoComplete="current-password" />
-                <button type="button" onClick={() => setShowPass(p => !p)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 btn-ghost" style={{ padding:'4px' }}
-                  aria-label={showPass ? 'Hide password' : 'Show password'}>
-                  {showPass ? <EyeOff size={14} /> : <Eye size={14} />}
-                </button>
-              </div>
-            </div>
-
-            {error && (
-              <div className="rounded-lg px-3 py-2.5" style={{
-                background:'rgba(239,68,68,0.07)', border:'1px solid rgba(239,68,68,0.2)',
-              }}>
-                <p style={{ fontSize:12, color:'#f87171' }}>{error}</p>
-              </div>
-            )}
-
-            <button type="submit" disabled={loading} className="btn-primary w-full justify-center"
-              style={{ padding:'13px', fontSize:14 }}>
-              {loading && <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />}
-              {loading ? 'Signing in…' : 'SIGN IN'}
+          {/* Logo */}
+          <div className="relative z-10">
+            <button
+              type="button"
+              onClick={() => navigate("/")}
+              aria-label="Return to MNEMOS home"
+              style={{
+                padding: 0,
+                border: 0,
+                background: "transparent",
+                cursor: "pointer",
+              }}
+            >
+              <MnemosLogo
+                size={40}
+                variant="full"
+              />
             </button>
-          </form>
-
-          <div className="flex items-center gap-3">
-            <div className="divider flex-1" />
-            <span className="mono" style={{ fontSize:9, color:'#1f2937' }}>OR</span>
-            <div className="divider flex-1" />
           </div>
 
-          <button onClick={handleDemo} className="btn-outline w-full justify-center" style={{ padding:'12px' }}>
-            <Zap size={15} style={{ color:'#8b5cf6' }} />
-            CONTINUE AS DEMO USER
+          {/* Main visual content */}
+          <div
+            className="relative z-10 flex flex-1 flex-col justify-center"
+            style={{
+              width: "100%",
+              maxWidth: 610,
+              marginInline: "auto",
+              paddingTop: 38,
+              paddingBottom: 32,
+            }}
+          >
+            <div
+              className="inline-flex items-center gap-2 self-start rounded-full"
+              style={{
+                padding: "7px 11px",
+                marginBottom: 24,
+                color: "#a78bfa",
+                background: "rgba(124,58,237,0.08)",
+                border:
+                  "1px solid rgba(139,92,246,0.2)",
+              }}
+            >
+              <Sparkles size={12} />
+
+              <span
+                className="mono"
+                style={{
+                  fontSize: 9,
+                  fontWeight: 800,
+                  letterSpacing: "0.15em",
+                }}
+              >
+                RESEARCH PREVIEW
+              </span>
+            </div>
+
+            <h1
+              style={{
+                maxWidth: 560,
+                margin: 0,
+                color: "#ffffff",
+                fontSize:
+                  "clamp(2.6rem, 4.1vw, 4.35rem)",
+                fontWeight: 900,
+                lineHeight: 1.02,
+                letterSpacing: "-0.055em",
+              }}
+            >
+              The memory layer
+              <br />
+              autonomous agents
+              <br />
+              <span className="gradient-text">
+                deserve.
+              </span>
+            </h1>
+
+            <p
+              style={{
+                maxWidth: 500,
+                margin: "22px 0 0",
+                color: "#64748b",
+                fontSize: 15,
+                lineHeight: 1.75,
+              }}
+            >
+              MNEMOS creates structured,
+              bounded and self-correcting world
+              models—eliminating context bloat,
+              hidden contradictions and
+              uncontrolled prompt growth.
+            </p>
+
+            {/* Graph */}
+            <div
+              style={{
+                position: "relative",
+                marginTop: 36,
+              }}
+            >
+              <div
+                className="absolute inset-0 pointer-events-none"
+                style={{
+                  borderRadius: 24,
+                  background:
+                    "rgba(124,58,237,0.13)",
+                  filter: "blur(42px)",
+                  transform: "scale(0.88)",
+                }}
+              />
+
+              <div
+                style={{
+                  position: "relative",
+                  overflow: "hidden",
+                  borderRadius: 22,
+                  padding: 1,
+                  background:
+                    "linear-gradient(135deg, rgba(139,92,246,0.35), rgba(34,211,238,0.1), rgba(255,255,255,0.04))",
+                  boxShadow:
+                    "0 28px 75px rgba(0,0,0,0.38)",
+                }}
+              >
+                <div
+                  style={{
+                    overflow: "hidden",
+                    borderRadius: 21,
+                    padding: "17px 17px 12px",
+                    background:
+                      "linear-gradient(180deg, rgba(12,17,32,0.96), rgba(5,9,18,0.98))",
+                  }}
+                >
+                  <div
+                    className="flex items-center justify-between"
+                    style={{ marginBottom: 10 }}
+                  >
+                    <div>
+                      <p
+                        className="mono"
+                        style={{
+                          margin: 0,
+                          color: "#c4b5fd",
+                          fontSize: 9,
+                          fontWeight: 800,
+                          letterSpacing: "0.13em",
+                        }}
+                      >
+                        LIVE WORLD MODEL
+                      </p>
+
+                      <p
+                        style={{
+                          margin: "4px 0 0",
+                          color: "#475569",
+                          fontSize: 11,
+                        }}
+                      >
+                        Structured beliefs and
+                        relationships
+                      </p>
+                    </div>
+
+                    <div
+                      className="mono"
+                      style={{
+                        padding: "6px 9px",
+                        borderRadius: 999,
+                        color: "#34d399",
+                        fontSize: 8,
+                        letterSpacing: "0.12em",
+                        background:
+                          "rgba(16,185,129,0.08)",
+                        border:
+                          "1px solid rgba(16,185,129,0.17)",
+                      }}
+                    >
+                      ACTIVE
+                    </div>
+                  </div>
+
+                  <div
+                    style={{
+                      overflow: "hidden",
+                      minHeight: 225,
+                      borderRadius: 16,
+                      background:
+                        "radial-gradient(circle at 50% 50%, rgba(124,58,237,0.08), transparent 48%), rgba(2,6,14,0.7)",
+                      border:
+                        "1px solid rgba(148,163,184,0.06)",
+                    }}
+                  >
+                    <NodeGraph
+                      width={500}
+                      height={225}
+                      animate
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Capability items */}
+            <div
+              className="grid grid-cols-3"
+              style={{
+                gap: 12,
+                marginTop: 18,
+              }}
+            >
+              <CapabilityCard
+                icon={Brain}
+                colour="#8b5cf6"
+                title="Bounded Context"
+                description="Relevant facts only"
+              />
+
+              <CapabilityCard
+                icon={GitBranch}
+                colour="#22d3ee"
+                title="Versioned Beliefs"
+                description="Corrections preserved"
+              />
+
+              <CapabilityCard
+                icon={Shield}
+                colour="#f59e0b"
+                title="Auditable"
+                description="Reasoning stays visible"
+              />
+            </div>
+          </div>
+
+          <div
+            className="relative z-10 mono"
+            style={{
+              color: "#293548",
+              fontSize: 8,
+              letterSpacing: "0.14em",
+            }}
+          >
+            HACKTRONIX 2.0 · TRACK B —
+            ARTIFICIAL INTELLIGENCE · LOCAL-FIRST
+          </div>
+        </section>
+
+        {/* =====================================================
+            RIGHT LOGIN PANEL
+            ===================================================== */}
+
+        <section
+          className="relative flex min-h-screen items-center justify-center"
+          style={{
+            padding: "96px 24px 48px",
+          }}
+        >
+          <div className="absolute inset-0">
+            <StarField density={70} />
+          </div>
+
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              background:
+                "radial-gradient(circle at 78% 18%, rgba(124,58,237,0.12), transparent 34%), radial-gradient(circle at 35% 75%, rgba(34,211,238,0.04), transparent 30%)",
+            }}
+          />
+
+          <button
+            type="button"
+            onClick={() => navigate("/")}
+            className="absolute left-6 top-6 z-20 flex items-center gap-2"
+            style={{
+              padding: "8px 12px",
+              color: "#64748b",
+              fontSize: 12,
+              background: "rgba(8,13,25,0.65)",
+              border:
+                "1px solid rgba(148,163,184,0.08)",
+              borderRadius: 10,
+              backdropFilter: "blur(12px)",
+              cursor: "pointer",
+            }}
+          >
+            <ArrowLeft size={14} />
+            Back
           </button>
 
-          <p style={{ textAlign:'center', fontSize:11, color:'#1f2937' }}>
-            This is a prototype. Authentication is for demo purposes only.
-          </p>
-        </div>
+          <div
+            className="relative z-10"
+            style={{
+              width: "100%",
+              maxWidth: 480,
+            }}
+          >
+            <div
+              className="lg:hidden"
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                marginBottom: 30,
+              }}
+            >
+              <MnemosLogo
+                size={42}
+                variant="full"
+              />
+            </div>
+
+            {/* Login card */}
+            <div
+              style={{
+                position: "relative",
+                padding: 1,
+                borderRadius: 26,
+                background:
+                  "linear-gradient(145deg, rgba(139,92,246,0.28), rgba(148,163,184,0.08), rgba(34,211,238,0.08))",
+                boxShadow:
+                  "0 36px 100px rgba(0,0,0,0.48), 0 0 60px rgba(124,58,237,0.06)",
+              }}
+            >
+              <div
+                style={{
+                  borderRadius: 25,
+                  padding:
+                    "clamp(26px, 5vw, 42px)",
+                  background:
+                    "linear-gradient(180deg, rgba(12,17,31,0.94), rgba(6,10,20,0.97))",
+                  backdropFilter: "blur(24px)",
+                }}
+              >
+                <div>
+                  <p
+                    className="label-overline"
+                    style={{
+                      marginBottom: 12,
+                      color: "#8b5cf6",
+                    }}
+                  >
+                    MNEMOS RESEARCH CONSOLE
+                  </p>
+
+                  <h2
+                    style={{
+                      margin: 0,
+                      color: "#ffffff",
+                      fontSize:
+                        "clamp(2rem, 5vw, 2.8rem)",
+                      fontWeight: 850,
+                      lineHeight: 1.05,
+                      letterSpacing: "-0.045em",
+                    }}
+                  >
+                    Welcome back.
+                  </h2>
+
+                  <p
+                    style={{
+                      margin: "13px 0 0",
+                      color: "#64748b",
+                      fontSize: 14,
+                      lineHeight: 1.65,
+                    }}
+                  >
+                    Authenticate to inspect the
+                    live world model, belief
+                    corrections and agent
+                    reasoning.
+                  </p>
+                </div>
+
+                {/* Demo credentials */}
+                <div
+                  style={{
+                    marginTop: 27,
+                    padding: "15px 16px",
+                    borderRadius: 14,
+                    background:
+                      "rgba(99,102,241,0.055)",
+                    border:
+                      "1px solid rgba(99,102,241,0.17)",
+                  }}
+                >
+                  <div
+                    className="flex items-center justify-between"
+                    style={{ gap: 12 }}
+                  >
+                    <div>
+                      <p
+                        className="mono"
+                        style={{
+                          margin: 0,
+                          color: "#818cf8",
+                          fontSize: 8,
+                          fontWeight: 800,
+                          letterSpacing: "0.15em",
+                        }}
+                      >
+                        DEMO CREDENTIALS
+                      </p>
+
+                      <p
+                        className="mono"
+                        style={{
+                          margin: "7px 0 0",
+                          color: "#94a3b8",
+                          fontSize: 11,
+                        }}
+                      >
+                        demo@mnemos.ai
+                      </p>
+
+                      <p
+                        className="mono"
+                        style={{
+                          margin: "3px 0 0",
+                          color: "#64748b",
+                          fontSize: 11,
+                        }}
+                      >
+                        mnemos123
+                      </p>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setEmail(
+                          "demo@mnemos.ai",
+                        );
+                        setPassword("mnemos123");
+                        setError("");
+                      }}
+                      style={{
+                        padding: "8px 11px",
+                        color: "#c4b5fd",
+                        fontSize: 10,
+                        fontWeight: 700,
+                        background:
+                          "rgba(124,58,237,0.1)",
+                        border:
+                          "1px solid rgba(139,92,246,0.2)",
+                        borderRadius: 9,
+                        cursor: "pointer",
+                      }}
+                    >
+                      Autofill
+                    </button>
+                  </div>
+                </div>
+
+                {/* Form */}
+                <form
+                  onSubmit={handleSubmit}
+                  style={{
+                    display: "grid",
+                    gap: 19,
+                    marginTop: 27,
+                  }}
+                >
+                  <div>
+                    <label
+                      htmlFor="email"
+                      className="mono"
+                      style={{
+                        display: "block",
+                        marginBottom: 8,
+                        color: "#64748b",
+                        fontSize: 9,
+                        fontWeight: 800,
+                        letterSpacing: "0.12em",
+                      }}
+                    >
+                      EMAIL ADDRESS
+                    </label>
+
+                    <input
+                      id="email"
+                      type="email"
+                      value={email}
+                      onChange={(event) => {
+                        setEmail(
+                          event.target.value,
+                        );
+                        setError("");
+                      }}
+                      placeholder="demo@mnemos.ai"
+                      required
+                      autoComplete="email"
+                      className="input-dark"
+                      style={{
+                        width: "100%",
+                        height: 54,
+                        borderRadius: 13,
+                        paddingInline: 16,
+                        color: "#e2e8f0",
+                        fontSize: 14,
+                        background:
+                          "rgba(3,7,15,0.8)",
+                        border:
+                          "1px solid rgba(148,163,184,0.1)",
+                      }}
+                    />
+                  </div>
+
+                  <div>
+                    <div
+                      className="flex items-center justify-between"
+                      style={{ marginBottom: 8 }}
+                    >
+                      <label
+                        htmlFor="password"
+                        className="mono"
+                        style={{
+                          color: "#64748b",
+                          fontSize: 9,
+                          fontWeight: 800,
+                          letterSpacing: "0.12em",
+                        }}
+                      >
+                        PASSWORD
+                      </label>
+
+                      <span
+                        style={{
+                          color: "#334155",
+                          fontSize: 10,
+                        }}
+                      >
+                        Demo access only
+                      </span>
+                    </div>
+
+                    <div
+                      style={{ position: "relative" }}
+                    >
+                      <input
+                        id="password"
+                        type={
+                          showPass
+                            ? "text"
+                            : "password"
+                        }
+                        value={password}
+                        onChange={(event) => {
+                          setPassword(
+                            event.target.value,
+                          );
+                          setError("");
+                        }}
+                        placeholder="••••••••"
+                        required
+                        autoComplete="current-password"
+                        className="input-dark"
+                        style={{
+                          width: "100%",
+                          height: 54,
+                          borderRadius: 13,
+                          paddingLeft: 16,
+                          paddingRight: 48,
+                          color: "#e2e8f0",
+                          fontSize: 14,
+                          background:
+                            "rgba(3,7,15,0.8)",
+                          border:
+                            "1px solid rgba(148,163,184,0.1)",
+                        }}
+                      />
+
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setShowPass(
+                            (previous) =>
+                              !previous,
+                          )
+                        }
+                        aria-label={
+                          showPass
+                            ? "Hide password"
+                            : "Show password"
+                        }
+                        style={{
+                          position: "absolute",
+                          top: "50%",
+                          right: 13,
+                          display: "grid",
+                          width: 30,
+                          height: 30,
+                          placeItems: "center",
+                          color: "#64748b",
+                          background:
+                            "transparent",
+                          border: 0,
+                          transform:
+                            "translateY(-50%)",
+                          cursor: "pointer",
+                        }}
+                      >
+                        {showPass ? (
+                          <EyeOff size={16} />
+                        ) : (
+                          <Eye size={16} />
+                        )}
+                      </button>
+                    </div>
+                  </div>
+
+                  {error && (
+                    <div
+                      role="alert"
+                      style={{
+                        padding: "11px 13px",
+                        borderRadius: 11,
+                        background:
+                          "rgba(239,68,68,0.065)",
+                        border:
+                          "1px solid rgba(239,68,68,0.18)",
+                      }}
+                    >
+                      <p
+                        style={{
+                          margin: 0,
+                          color: "#f87171",
+                          fontSize: 12,
+                          lineHeight: 1.5,
+                        }}
+                      >
+                        {error}
+                      </p>
+                    </div>
+                  )}
+
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="btn-primary"
+                    style={{
+                      width: "100%",
+                      minHeight: 54,
+                      justifyContent: "center",
+                      marginTop: 2,
+                      fontSize: 13,
+                      fontWeight: 800,
+                      letterSpacing: "0.03em",
+                      opacity: loading ? 0.78 : 1,
+                      cursor: loading
+                        ? "not-allowed"
+                        : "pointer",
+                    }}
+                  >
+                    {loading ? (
+                      <>
+                        <span
+                          className="animate-spin"
+                          style={{
+                            width: 16,
+                            height: 16,
+                            borderRadius: "50%",
+                            border:
+                              "2px solid rgba(255,255,255,0.35)",
+                            borderTopColor:
+                              "#ffffff",
+                          }}
+                        />
+                        Signing in…
+                      </>
+                    ) : (
+                      <>
+                        <Shield size={16} />
+                        Sign In
+                      </>
+                    )}
+                  </button>
+                </form>
+
+                {/* Divider */}
+                <div
+                  className="flex items-center"
+                  style={{
+                    gap: 13,
+                    marginTop: 24,
+                  }}
+                >
+                  <div
+                    style={{
+                      flex: 1,
+                      height: 1,
+                      background:
+                        "rgba(148,163,184,0.07)",
+                    }}
+                  />
+
+                  <span
+                    className="mono"
+                    style={{
+                      color: "#334155",
+                      fontSize: 8,
+                      letterSpacing: "0.13em",
+                    }}
+                  >
+                    OR
+                  </span>
+
+                  <div
+                    style={{
+                      flex: 1,
+                      height: 1,
+                      background:
+                        "rgba(148,163,184,0.07)",
+                    }}
+                  />
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleDemo}
+                  className="btn-outline"
+                  style={{
+                    width: "100%",
+                    minHeight: 52,
+                    justifyContent: "center",
+                    marginTop: 22,
+                    fontSize: 13,
+                    fontWeight: 750,
+                  }}
+                >
+                  <Zap
+                    size={15}
+                    style={{ color: "#a78bfa" }}
+                  />
+                  Continue as Demo User
+                </button>
+
+                <div
+                  style={{
+                    marginTop: 26,
+                    paddingTop: 20,
+                    textAlign: "center",
+                    borderTop:
+                      "1px solid rgba(148,163,184,0.06)",
+                  }}
+                >
+                  <p
+                    className="mono"
+                    style={{
+                      margin: 0,
+                      color: "#334155",
+                      fontSize: 8,
+                      lineHeight: 1.8,
+                      letterSpacing: "0.1em",
+                    }}
+                  >
+                    HACKTRONIX 2.0 · TRACK B
+                    <br />
+                    LOCAL-FIRST · OFFLINE-READY ·
+                    TRANSPARENT REASONING
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
       </div>
+    </main>
+  );
+}
+
+interface CapabilityCardProps {
+  icon: typeof Brain;
+  colour: string;
+  title: string;
+  description: string;
+}
+
+function CapabilityCard({
+  icon: Icon,
+  colour,
+  title,
+  description,
+}: CapabilityCardProps) {
+  return (
+    <div
+      style={{
+        minWidth: 0,
+        padding: "14px 13px",
+        borderRadius: 14,
+        background:
+          "rgba(8,13,25,0.72)",
+        border:
+          "1px solid rgba(148,163,184,0.07)",
+        backdropFilter: "blur(12px)",
+      }}
+    >
+      <div
+        style={{
+          display: "grid",
+          width: 31,
+          height: 31,
+          placeItems: "center",
+          borderRadius: 9,
+          color: colour,
+          background: `${colour}13`,
+          border: `1px solid ${colour}22`,
+        }}
+      >
+        <Icon size={14} />
+      </div>
+
+      <p
+        style={{
+          margin: "12px 0 0",
+          color: "#cbd5e1",
+          fontSize: 11,
+          fontWeight: 700,
+        }}
+      >
+        {title}
+      </p>
+
+      <p
+        style={{
+          margin: "5px 0 0",
+          color: "#475569",
+          fontSize: 9,
+          lineHeight: 1.45,
+        }}
+      >
+        {description}
+      </p>
     </div>
   );
 }

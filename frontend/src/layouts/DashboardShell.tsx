@@ -1,81 +1,264 @@
-import { useState } from 'react';
-import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { useState } from "react";
 import {
-  LayoutDashboard, Play, Globe, Layers, AlertTriangle,
-  BarChart2, Network, Settings, LogOut, Menu, X,
-  Bell, ChevronDown,
-} from 'lucide-react';
-import { MnemosLogo } from '../components/brand/MnemosLogo';
-import { useAuth, logout } from '../hooks/useAuth';
-import { useRunId } from '../hooks/useRunId';
-import { StarField } from '../components/brand/StarField';
+  NavLink,
+  Outlet,
+  useNavigate,
+} from "react-router-dom";
+import {
+  LayoutDashboard,
+  Play,
+  Globe,
+  Layers,
+  AlertTriangle,
+  BarChart2,
+  Network,
+  Settings,
+  LogOut,
+  Menu,
+  X,
+  Bell,
+  ChevronDown,
+} from "lucide-react";
+
+import { MnemosLogo } from "../components/brand/MnemosLogo";
+import { StarField } from "../components/brand/StarField";
+import { useAuth, logout } from "../hooks/useAuth";
+import { useRunId } from "../hooks/useRunId";
 
 const NAV = [
-  { to: '/dashboard',              label: 'Overview',         icon: LayoutDashboard, end: true },
-  { to: '/dashboard/run',          label: 'Agent Run',        icon: Play },
-  { to: '/dashboard/world',        label: 'World Model',      icon: Globe },
-  { to: '/dashboard/context',      label: 'Bounded Context',  icon: Layers },
-  { to: '/dashboard/corrections',  label: 'Corrections',      icon: AlertTriangle },
-  { to: '/dashboard/metrics',      label: 'Metrics',          icon: BarChart2 },
-  { to: '/dashboard/architecture', label: 'Architecture',     icon: Network },
-  { to: '/dashboard/settings',     label: 'Settings',         icon: Settings },
+  {
+    to: "/dashboard",
+    label: "Overview",
+    icon: LayoutDashboard,
+    end: true,
+  },
+  {
+    to: "/dashboard/run",
+    label: "Agent Run",
+    icon: Play,
+  },
+  {
+    to: "/dashboard/world",
+    label: "World Model",
+    icon: Globe,
+  },
+  {
+    to: "/dashboard/context",
+    label: "Bounded Context",
+    icon: Layers,
+  },
+  {
+    to: "/dashboard/corrections",
+    label: "Corrections",
+    icon: AlertTriangle,
+  },
+  {
+    to: "/dashboard/metrics",
+    label: "Metrics",
+    icon: BarChart2,
+  },
+  {
+    to: "/dashboard/architecture",
+    label: "Architecture",
+    icon: Network,
+  },
+  {
+    to: "/dashboard/settings",
+    label: "Settings",
+    icon: Settings,
+  },
 ];
 
-function Sidebar({ collapsed, onToggle }: { collapsed: boolean; onToggle: () => void }) {
+interface SidebarProps {
+  collapsed: boolean;
+  onToggle: () => void;
+}
+
+function Sidebar({
+  collapsed,
+  onToggle,
+}: SidebarProps) {
   const navigate = useNavigate();
-  const doLogout = () => { logout(); navigate('/login'); };
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
 
   return (
     <aside
-      className={`${collapsed ? 'w-[60px]' : 'w-[220px]'} flex-shrink-0 flex flex-col relative overflow-hidden`}
+      className={`relative flex h-screen flex-shrink-0 flex-col overflow-hidden ${
+        collapsed ? "w-[84px]" : "w-[276px]"
+      }`}
       style={{
-        background: 'rgba(5,7,18,0.98)',
-        borderRight: '1px solid rgba(255,255,255,0.05)',
-        transition: 'width 0.25s cubic-bezier(.25,.46,.45,.94)',
+        background:
+          "linear-gradient(180deg, rgba(7,9,22,0.99) 0%, rgba(4,6,16,0.99) 100%)",
+        borderRight:
+          "1px solid rgba(148,163,184,0.09)",
+        transition:
+          "width 260ms cubic-bezier(0.22,1,0.36,1)",
+        boxShadow:
+          "18px 0 60px rgba(0,0,0,0.28)",
       }}
     >
-      {/* Subtle star bg inside sidebar */}
-      <div className="absolute inset-0 opacity-30 pointer-events-none"><StarField density={30} /></div>
-      {/* Violet glow at top */}
-      <div className="absolute top-0 left-0 right-0 h-32 pointer-events-none" style={{
-        background: 'radial-gradient(ellipse at 50% 0%, rgba(99,102,241,0.12) 0%, transparent 70%)',
-      }} />
+      <div className="pointer-events-none absolute inset-0 opacity-25">
+        <StarField density={24} />
+      </div>
 
-      {/* Logo row */}
-      <div className="h-14 flex items-center px-4 flex-shrink-0 relative z-10"
-        style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-        <div className="flex-1 overflow-hidden">
-          {!collapsed && <MnemosLogo size={28} variant="full" />}
-          {collapsed && <MnemosLogo size={26} variant="icon" />}
+      <div
+        className="pointer-events-none absolute left-0 right-0 top-0 h-56"
+        style={{
+          background:
+            "radial-gradient(circle at 50% 0%, rgba(124,58,237,0.16), transparent 70%)",
+        }}
+      />
+
+      <div
+        className="relative z-10 flex h-[76px] flex-shrink-0 items-center px-4"
+        style={{
+          borderBottom:
+            "1px solid rgba(148,163,184,0.08)",
+        }}
+      >
+        <div className="flex min-w-0 flex-1 items-center">
+          <MnemosLogo
+            size={collapsed ? 34 : 32}
+            variant={collapsed ? "icon" : "full"}
+          />
         </div>
-        <button onClick={onToggle} className="btn-ghost p-1.5 flex-shrink-0" aria-label="Toggle sidebar">
-          {collapsed ? <Menu size={14} /> : <X size={14} />}
+
+        <button
+          type="button"
+          onClick={onToggle}
+          aria-label="Toggle sidebar"
+          className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl transition-all duration-200"
+          style={{
+            color: "#94a3b8",
+            background:
+              "rgba(255,255,255,0.025)",
+            border:
+              "1px solid rgba(255,255,255,0.06)",
+          }}
+        >
+          {collapsed ? (
+            <Menu size={17} />
+          ) : (
+            <X size={17} />
+          )}
         </button>
       </div>
 
-      {/* Nav */}
-      <nav className="flex-1 px-2 py-4 space-y-0.5 overflow-y-auto relative z-10">
-        {NAV.map(({ to, label, icon: Icon, end }) => (
-          <NavLink key={to} to={to} end={end}
-            title={collapsed ? label : undefined}
-            className={({ isActive }) =>
-              `sidebar-item ${isActive ? 'active' : ''}`
-            }
+      {!collapsed && (
+        <div className="relative z-10 px-5 pb-2 pt-5">
+          <p
+            className="m-0 text-[10px] font-bold uppercase tracking-[0.24em]"
+            style={{ color: "#475569" }}
           >
-            <Icon size={15} className="flex-shrink-0" />
-            {!collapsed && <span className="truncate" style={{ fontSize: 13 }}>{label}</span>}
-          </NavLink>
-        ))}
+            Workspace
+          </p>
+        </div>
+      )}
+
+      <nav className="relative z-10 flex-1 space-y-1.5 overflow-y-auto px-3 py-3">
+        {NAV.map(
+          ({ to, label, icon: Icon, end }) => (
+            <NavLink
+              key={to}
+              to={to}
+              end={end}
+              title={collapsed ? label : undefined}
+              className={({ isActive }) =>
+                `group relative flex h-12 items-center rounded-2xl transition-all duration-200 ${
+                  collapsed
+                    ? "justify-center px-0"
+                    : "gap-3.5 px-4"
+                } ${
+                  isActive
+                    ? "text-white"
+                    : "text-slate-500 hover:text-slate-200"
+                }`
+              }
+              style={({ isActive }) => ({
+                background: isActive
+                  ? "linear-gradient(90deg, rgba(124,58,237,0.19), rgba(99,102,241,0.08))"
+                  : "transparent",
+                border: isActive
+                  ? "1px solid rgba(139,92,246,0.22)"
+                  : "1px solid transparent",
+                boxShadow: isActive
+                  ? "inset 0 1px 0 rgba(255,255,255,0.04), 0 10px 35px rgba(76,29,149,0.09)"
+                  : "none",
+              })}
+            >
+              {({ isActive }) => (
+                <>
+                  {isActive && (
+                    <span
+                      className="absolute left-0 h-6 w-[3px] rounded-r-full"
+                      style={{
+                        background:
+                          "linear-gradient(180deg,#a78bfa,#6366f1)",
+                        boxShadow:
+                          "0 0 14px rgba(139,92,246,0.75)",
+                      }}
+                    />
+                  )}
+
+                  <span
+                    className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-xl transition-all duration-200"
+                    style={{
+                      color: isActive
+                        ? "#c4b5fd"
+                        : undefined,
+                      background: isActive
+                        ? "rgba(124,58,237,0.12)"
+                        : "transparent",
+                    }}
+                  >
+                    <Icon size={17} strokeWidth={1.9} />
+                  </span>
+
+                  {!collapsed && (
+                    <span className="truncate text-[13px] font-semibold">
+                      {label}
+                    </span>
+                  )}
+                </>
+              )}
+            </NavLink>
+          ),
+        )}
       </nav>
 
-      {/* Logout */}
-      <div className="px-2 pb-4 relative z-10" style={{ borderTop: '1px solid rgba(255,255,255,0.04)' }}>
-        <button onClick={doLogout}
-          className="sidebar-item w-full"
-          style={{ color: '#374151' }}
-          title={collapsed ? 'Logout' : undefined}>
-          <LogOut size={14} className="flex-shrink-0" />
-          {!collapsed && <span style={{ fontSize:13 }}>Logout</span>}
+      <div
+        className="relative z-10 p-3"
+        style={{
+          borderTop:
+            "1px solid rgba(148,163,184,0.07)",
+        }}
+      >
+        <button
+          type="button"
+          onClick={handleLogout}
+          title={collapsed ? "Logout" : undefined}
+          className={`flex h-12 w-full items-center rounded-2xl transition-all duration-200 ${
+            collapsed
+              ? "justify-center"
+              : "gap-3.5 px-4"
+          }`}
+          style={{
+            color: "#64748b",
+          }}
+        >
+          <span className="flex h-8 w-8 items-center justify-center rounded-xl">
+            <LogOut size={17} />
+          </span>
+
+          {!collapsed && (
+            <span className="text-[13px] font-semibold">
+              Logout
+            </span>
+          )}
         </button>
       </div>
     </aside>
@@ -83,82 +266,202 @@ function Sidebar({ collapsed, onToggle }: { collapsed: boolean; onToggle: () => 
 }
 
 function Topbar() {
-  const { user }   = useAuth();
-  const [runId]    = useRunId();
-  const navigate   = useNavigate();
+  const { user } = useAuth();
+  const [runId] = useRunId();
+  const navigate = useNavigate();
 
-  const hasRun     = !!runId;
-  const runColor   = hasRun ? '#10b981' : '#374151';
-  const runLabel   = hasRun ? 'ACTIVE' : 'IDLE';
+  const hasRun = Boolean(runId);
+  const runColor = hasRun ? "#34d399" : "#64748b";
+  const runLabel = hasRun ? "ACTIVE" : "IDLE";
 
   return (
-    <header className="h-14 flex-shrink-0 flex items-center px-6 gap-4"
+    <header
+      className="relative z-30 flex h-[76px] flex-shrink-0 items-center gap-4 px-6 lg:px-8"
       style={{
-        background: 'rgba(5,7,18,0.98)',
-        borderBottom: '1px solid rgba(255,255,255,0.05)',
-        backdropFilter: 'blur(8px)',
-      }}>
-      {/* Spacer */}
+        background:
+          "rgba(4,6,16,0.78)",
+        borderBottom:
+          "1px solid rgba(148,163,184,0.08)",
+        backdropFilter: "blur(22px)",
+        WebkitBackdropFilter: "blur(22px)",
+      }}
+    >
       <div className="flex-1" />
 
-      {/* Status chips */}
-      <div className="hidden md:flex items-center gap-2">
-        <span className="badge badge-slate" style={{ fontFamily:'monospace', fontSize:9 }}>DEMO WORLD</span>
-        <span className="badge" style={{
-          background:`${runColor}12`, color:runColor,
-          border:`1px solid ${runColor}20`, fontFamily:'monospace', fontSize:9,
-        }}>
-          <span className="w-1.5 h-1.5 rounded-full flex-shrink-0"
-            style={{ background:runColor, boxShadow:`0 0 4px ${runColor}` }} />
+      <div className="hidden items-center gap-2 lg:flex">
+        <span
+          className="inline-flex h-8 items-center rounded-full px-3 text-[9px] font-bold tracking-[0.15em]"
+          style={{
+            fontFamily: "monospace",
+            color: "#94a3b8",
+            background:
+              "rgba(148,163,184,0.06)",
+            border:
+              "1px solid rgba(148,163,184,0.10)",
+          }}
+        >
+          DEMO WORLD
+        </span>
+
+        <span
+          className="inline-flex h-8 items-center gap-2 rounded-full px-3 text-[9px] font-bold tracking-[0.15em]"
+          style={{
+            fontFamily: "monospace",
+            color: runColor,
+            background: `${runColor}10`,
+            border: `1px solid ${runColor}22`,
+          }}
+        >
+          <span
+            className="h-1.5 w-1.5 rounded-full"
+            style={{
+              background: runColor,
+              boxShadow: `0 0 8px ${runColor}`,
+            }}
+          />
           AGENT {runLabel}
         </span>
-        <span className="badge badge-violet" style={{ fontFamily:'monospace', fontSize:9 }}>
+
+        <span
+          className="inline-flex h-8 items-center rounded-full px-3 text-[9px] font-bold tracking-[0.15em]"
+          style={{
+            fontFamily: "monospace",
+            color: "#c4b5fd",
+            background:
+              "rgba(124,58,237,0.09)",
+            border:
+              "1px solid rgba(139,92,246,0.18)",
+          }}
+        >
           QWEN2.5:3B
         </span>
+
         {runId && (
-          <span className="badge badge-slate" style={{ fontFamily:'monospace', fontSize:9 }}>
+          <span
+            className="inline-flex h-8 max-w-[180px] items-center truncate rounded-full px-3 text-[9px] font-bold tracking-[0.12em]"
+            style={{
+              fontFamily: "monospace",
+              color: "#94a3b8",
+              background:
+                "rgba(148,163,184,0.05)",
+              border:
+                "1px solid rgba(148,163,184,0.09)",
+            }}
+          >
             RUN {runId.toUpperCase()}
           </span>
         )}
       </div>
 
-      {/* Bell */}
-      <button className="btn-ghost" style={{ padding:'6px' }} aria-label="Notifications">
-        <Bell size={15} />
+      <button
+        type="button"
+        aria-label="Notifications"
+        className="relative flex h-10 w-10 items-center justify-center rounded-xl transition-all duration-200"
+        style={{
+          color: "#94a3b8",
+          background:
+            "rgba(255,255,255,0.025)",
+          border:
+            "1px solid rgba(255,255,255,0.06)",
+        }}
+      >
+        <Bell size={17} />
+
+        <span
+          className="absolute right-2.5 top-2.5 h-1.5 w-1.5 rounded-full"
+          style={{
+            background: "#8b5cf6",
+            boxShadow:
+              "0 0 8px rgba(139,92,246,0.8)",
+          }}
+        />
       </button>
 
-      {/* Avatar */}
       <button
-        onClick={() => navigate('/dashboard/settings')}
-        className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+        type="button"
+        onClick={() =>
+          navigate("/dashboard/settings")
+        }
+        className="flex items-center gap-3 rounded-2xl px-2 py-1.5 transition-all duration-200"
         aria-label="User menu"
       >
-        <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-black"
-          style={{ background:'linear-gradient(135deg,#6366f1,#8b5cf6)', color:'#fff', fontFamily:'monospace' }}>
-          {user?.name?.charAt(0) ?? 'D'}
+        <div
+          className="flex h-10 w-10 items-center justify-center rounded-2xl text-sm font-black text-white"
+          style={{
+            fontFamily: "monospace",
+            background:
+              "linear-gradient(135deg,#6366f1,#8b5cf6)",
+            boxShadow:
+              "0 10px 28px rgba(99,102,241,0.25)",
+          }}
+        >
+          {user?.name?.charAt(0)?.toUpperCase() ??
+            "D"}
         </div>
-        {user && (
-          <span className="hidden md:block" style={{ fontSize:12, color:'#374151', maxWidth:80, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
-            {user.name}
-          </span>
-        )}
-        <ChevronDown size={12} style={{ color:'#374151' }} />
+
+        <div className="hidden min-w-0 text-left md:block">
+          <p
+            className="m-0 max-w-[120px] truncate text-[12px] font-semibold"
+            style={{ color: "#cbd5e1" }}
+          >
+            {user?.name ?? "Demo User"}
+          </p>
+
+          <p
+            className="m-0 mt-0.5 text-[9px] uppercase tracking-[0.14em]"
+            style={{ color: "#475569" }}
+          >
+            Local workspace
+          </p>
+        </div>
+
+        <ChevronDown
+          size={13}
+          className="hidden md:block"
+          style={{ color: "#64748b" }}
+        />
       </button>
     </header>
   );
 }
 
 export function DashboardShell() {
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] =
+    useState(false);
+
   return (
-    <div className="flex h-screen overflow-hidden" style={{ background: '#030308' }}>
-      <Sidebar collapsed={collapsed} onToggle={() => setCollapsed(c => !c)} />
-      <div className="flex-1 flex flex-col overflow-hidden">
+    <div
+      className="flex h-screen overflow-hidden"
+      style={{ background: "#030308" }}
+    >
+      <Sidebar
+        collapsed={collapsed}
+        onToggle={() =>
+          setCollapsed((current) => !current)
+        }
+      />
+
+      <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
         <Topbar />
-        <main className="flex-1 overflow-y-auto relative" style={{ background: '#030308' }}>
-          {/* Subtle background grid for all dashboard pages */}
-          <div className="absolute inset-0 grid-bg opacity-[0.3] pointer-events-none" />
-          <div className="relative z-10">
+
+        <main
+          className="relative flex-1 overflow-y-auto"
+          style={{
+            background:
+              "linear-gradient(180deg,#030308 0%,#050711 100%)",
+          }}
+        >
+          <div className="pointer-events-none absolute inset-0 grid-bg opacity-[0.22]" />
+
+          <div
+            className="pointer-events-none absolute left-1/2 top-0 h-[460px] w-[760px] -translate-x-1/2"
+            style={{
+              background:
+                "radial-gradient(circle at center, rgba(99,102,241,0.08), transparent 70%)",
+            }}
+          />
+
+          <div className="relative z-10 min-h-full">
             <Outlet />
           </div>
         </main>
