@@ -1,0 +1,39 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual environment
+.venv/
+venv/
+env/
+
+# Environment variables
+.env
+
+# Pytest
+.pytest_cache/
+htmlcov/
+.coverage
+
+# Data files (keep the folder structure, not the content)
+data/games/*
+data/world_models/*
+data/logs/*
+!data/games/.gitkeep
+!data/world_models/.gitkeep
+!data/logs/.gitkeep
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
