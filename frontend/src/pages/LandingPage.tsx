@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import {
-  ArrowRight, Zap, Globe, GitBranch, Shield, Brain,
+  ArrowRight, Zap, Globe, GitBranch,
   Layers, CheckCircle, XCircle, ArrowUpRight,
 } from 'lucide-react';
 import { MnemosLogo } from '../components/brand/MnemosLogo';
